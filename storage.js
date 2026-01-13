@@ -24,21 +24,33 @@ function getCurrentTimestamp() {
 }
 
 /**
- * LOAD ALL HOLDINGS from localStorage
+ * LOAD ALL HOLDINGS from cloud, fallback to localStorage
  * Returns an array of holding objects
  * If nothing stored yet, returns empty array
  */
-function loadHoldings() {
+async function loadHoldings() {
     try {
-        // Get the data from localStorage
-        const data = localStorage.getItem(STORAGE_KEY);
+        // Try to load from cloud first
+        const response = await fetch('/api/holdings');
+        if (response.ok) {
+            const cloudHoldings = await response.json();
+            if (cloudHoldings.length > 0) {
+                // Update localStorage with cloud data
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudHoldings));
+                console.log('Loaded from cloud:', cloudHoldings.length, 'holdings');
+                return cloudHoldings;
+            }
+        }
+    } catch (error) {
+        console.warn('Cloud load failed, using localStorage:', error);
+    }
 
-        // If no data exists, return empty array
+    // Fallback to localStorage
+    try {
+        const data = localStorage.getItem(STORAGE_KEY);
         if (!data) {
             return [];
         }
-
-        // Parse the JSON string back into JavaScript array
         return JSON.parse(data);
     } catch (error) {
         console.error('Error loading holdings:', error);
