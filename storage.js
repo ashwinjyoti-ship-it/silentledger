@@ -184,7 +184,7 @@ function updateHolding(id, updatedData) {
         };
 
         // Save back to localStorage
-        saveHoldings(holdings);
+        await saveHoldings(holdings);
 
         return holdings[index];
     } catch (error) {
@@ -206,9 +206,9 @@ function updateHolding(id, updatedData) {
  * Takes holding ID and entry data
  * Returns the updated holding or null on error
  */
-function addLedgerEntry(holdingId, entryData) {
+async function addLedgerEntry(holdingId, entryData) {
     try {
-        const holdings = loadHoldings();
+        const holdings = await loadHoldings();
 
         // Find the holding
         const index = holdings.findIndex(h => h.id === holdingId);
@@ -241,7 +241,7 @@ function addLedgerEntry(holdingId, entryData) {
         holdings[index].updated_at = getCurrentTimestamp();
 
         // Save back to localStorage
-        saveHoldings(holdings);
+        await saveHoldings(holdings);
 
         return holdings[index];
     } catch (error) {
@@ -254,9 +254,9 @@ function addLedgerEntry(holdingId, entryData) {
  * DELETE A LEDGER ENTRY
  * Removes a specific entry from a holding's ledger
  */
-function deleteLedgerEntry(holdingId, entryId) {
+async function deleteLedgerEntry(holdingId, entryId) {
     try {
-        const holdings = loadHoldings();
+        const holdings = await loadHoldings();
 
         // Find the holding
         const index = holdings.findIndex(h => h.id === holdingId);
@@ -280,7 +280,7 @@ function deleteLedgerEntry(holdingId, entryId) {
         holdings[index].updated_at = getCurrentTimestamp();
 
         // Save back to localStorage
-        saveHoldings(holdings);
+        await saveHoldings(holdings);
 
         return true;
     } catch (error) {
