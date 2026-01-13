@@ -707,7 +707,7 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
 
         // Refresh holdings display
-        displayHoldings();
+        await render();
     }
 
     // Back to upload
