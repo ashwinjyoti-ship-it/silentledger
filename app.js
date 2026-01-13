@@ -891,8 +891,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Export data handler
-    exportDataBtn.addEventListener('click', function() {
-        const jsonData = exportAllData();
+    exportDataBtn.addEventListener('click', async function() {
+        const holdings = await loadHoldings();
+        const jsonData = JSON.stringify(holdings, null, 2);
 
         // Create a download file
         const blob = new Blob([jsonData], { type: 'application/json' });
@@ -918,15 +919,25 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!file) return;
 
             const reader = new FileReader();
-            reader.onload = function(event) {
+            reader.onload = async function(event) {
                 const jsonString = event.target.result;
-                const result = importAllData(jsonString);
 
-                if (result.success) {
-                    alert(result.message);
-                    render(); // Refresh display
-                } else {
-                    alert('Import failed: ' + result.message);
+                try {
+                    const importedHoldings = JSON.parse(jsonString);
+
+                    if (!Array.isArray(importedHoldings)) {
+                        alert('Invalid data format. Expected an array of holdings.');
+                        return;
+                    }
+
+                    const existingHoldings = await loadHoldings();
+                    const mergedHoldings = [...existingHoldings, ...importedHoldings];
+                    await saveHoldings(mergedHoldings);
+
+                    alert(`Successfully imported ${importedHoldings.length} holdings.`);
+                    await render();
+                } catch (error) {
+                    alert('Import failed: ' + error.message);
                 }
             };
             reader.readAsText(file);
