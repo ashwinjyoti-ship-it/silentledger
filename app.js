@@ -23,17 +23,17 @@ document.addEventListener('DOMContentLoaded', function() {
      * INITIALIZE THE APP
      * Load and display existing holdings when page loads
      */
-    function init() {
-        displayHoldings();
+    async function init() {
+        await displayHoldings();
     }
 
     /**
      * DISPLAY ALL HOLDINGS
      * Loads holdings from storage and creates cards for each
      */
-    function displayHoldings() {
+    async function displayHoldings() {
         // Load all holdings from localStorage
-        const holdings = loadHoldings();
+        const holdings = await loadHoldings();
 
         // Clear the grid
         holdingsGrid.innerHTML = '';
