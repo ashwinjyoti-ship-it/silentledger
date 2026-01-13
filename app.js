@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
      * HANDLE FORM SUBMISSION
      * Called when user submits the "add holding" form
      */
-    function handleFormSubmit(event) {
+    async function handleFormSubmit(event) {
         // Prevent default form submission (which would reload page)
         event.preventDefault();
 
@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Add the holding to storage
-        const newHolding = addHolding(formData);
+        const newHolding = await addHolding(formData);
 
         if (newHolding) {
             console.log('Holding added:', newHolding);
@@ -375,7 +375,7 @@ document.addEventListener('DOMContentLoaded', function() {
      * HANDLE LEDGER ENTRY FORM SUBMISSION
      * Saves the new ledger entry and refreshes display
      */
-    function handleLedgerEntrySubmit(event) {
+    async function handleLedgerEntrySubmit(event) {
         event.preventDefault();
 
         // Get form data
@@ -395,7 +395,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Add the entry to storage
-        const updatedHolding = addLedgerEntry(holdingId, entryData);
+        const updatedHolding = await addLedgerEntry(holdingId, entryData);
 
         if (updatedHolding) {
             console.log('Ledger entry added:', entryData);
