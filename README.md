@@ -2,6 +2,12 @@
 
 A personal archival app for documenting stock holdings. Simple, offline-first, with teenage engineering inspired design.
 
+## 🌐 Live Demo
+
+**Try it now**: https://30e20841.silentledger.pages.dev
+
+**GitHub Repository**: https://github.com/ashwinjyoti-ship-it/silentledger
+
 ## What This App Does
 
 - Document your father's stock portfolio
@@ -139,13 +145,20 @@ All data is stored in your browser's localStorage under the key: `silentLedger_h
 localStorage.removeItem('silentLedger_holdings');
 ```
 
-## Next Steps (Not Yet Implemented)
+## Deployment
+
+✅ **Deployed to Cloudflare Pages**: https://30e20841.silentledger.pages.dev
+✅ **Source on GitHub**: https://github.com/ashwinjyoti-ship-it/silentledger
+
+See [DEPLOYMENT_COMPLETE.md](DEPLOYMENT_COMPLETE.md) for deployment details.
+
+## Potential Future Features
 
 - Export holdings to JSON/CSV
-- Import holdings from file
-- Edit existing holdings
-- Deploy to Cloudflare Pages
-- Connect to Cloudflare D1 database
+- Edit existing holdings inline
+- Persistent PDF storage
+- Ledger entry import from CSV
+- Connect to Cloudflare D1 database for backup
 
 ## Troubleshooting
 
