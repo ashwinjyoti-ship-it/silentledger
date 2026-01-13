@@ -480,7 +480,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Ledger modal event listeners
-    ledgerEntryForm.addEventListener('submit', handleLedgerEntrySubmit);
+    ledgerEntryForm.addEventListener('submit', async function(event) {
+        await handleLedgerEntrySubmit(event);
+    });
     closeLedgerModalBtn.addEventListener('click', closeLedgerModal);
     cancelLedgerEntryBtn.addEventListener('click', closeLedgerModal);
 
