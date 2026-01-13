@@ -148,7 +148,7 @@ function validateCSVData(data, mapping) {
  * Takes parsed CSV data and mapping, imports to storage
  * Returns results object with success/error counts
  */
-function importHoldingsFromCSV(data, mapping) {
+async function importHoldingsFromCSV(data, mapping) {
     const results = {
         total: data.length,
         success: 0,
@@ -156,7 +156,11 @@ function importHoldingsFromCSV(data, mapping) {
         errorDetails: []
     };
 
-    data.forEach((row, index) => {
+    // Get existing holdings
+    const holdings = await loadHoldings();
+
+    for (let index = 0; index < data.length; index++) {
+        const row = data[index];
         try {
             // Extract symbol (required)
             const symbol = row[mapping.symbol]?.trim().toUpperCase();
@@ -165,24 +169,22 @@ function importHoldingsFromCSV(data, mapping) {
                 throw new Error('Missing symbol');
             }
 
-            // Build holding data object
-            const holdingData = {
+            // Build holding object
+            const newHolding = {
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
                 symbol: symbol,
-                companyName: mapping.companyName ? row[mapping.companyName]?.trim() : '',
-                sharesCount: mapping.sharesCount ? parseFloat(row[mapping.sharesCount]) || null : null,
-                dateAcquired: mapping.dateAcquired ? row[mapping.dateAcquired]?.trim() : null,
-                purchasePrice: mapping.purchasePrice ? parseFloat(row[mapping.purchasePrice]) || null : null,
-                notes: mapping.notes ? row[mapping.notes]?.trim() : ''
+                company_name: mapping.companyName ? row[mapping.companyName]?.trim() : '',
+                shares_count: mapping.sharesCount ? parseFloat(row[mapping.sharesCount]) || null : null,
+                date_acquired: mapping.dateAcquired ? row[mapping.dateAcquired]?.trim() : null,
+                purchase_price: mapping.purchasePrice ? parseFloat(row[mapping.purchasePrice]) || null : null,
+                notes: mapping.notes ? row[mapping.notes]?.trim() : '',
+                ledger_entries: [],
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
             };
 
-            // Add holding to storage
-            const newHolding = addHolding(holdingData);
-
-            if (newHolding) {
-                results.success++;
-            } else {
-                throw new Error('Failed to add holding');
-            }
+            holdings.push(newHolding);
+            results.success++;
         } catch (error) {
             results.errors++;
             results.errorDetails.push({
@@ -190,7 +192,10 @@ function importHoldingsFromCSV(data, mapping) {
                 error: error.message
             });
         }
-    });
+    }
+
+    // Save all imported holdings at once
+    await saveHoldings(holdings);
 
     return results;
 }
