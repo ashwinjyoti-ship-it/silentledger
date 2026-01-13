@@ -59,13 +59,26 @@ async function loadHoldings() {
 }
 
 /**
- * SAVE ALL HOLDINGS to localStorage
+ * SAVE ALL HOLDINGS to localStorage and auto-sync to cloud
  * Takes an array of holdings and stores it
  */
-function saveHoldings(holdings) {
+async function saveHoldings(holdings) {
     try {
         // Convert the array to JSON string and save
         localStorage.setItem(STORAGE_KEY, JSON.stringify(holdings));
+
+        // Auto-sync to cloud
+        try {
+            await fetch('/api/sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ holdings })
+            });
+            console.log('✓ Auto-synced to cloud');
+        } catch (syncError) {
+            console.warn('Cloud sync failed (offline?):', syncError);
+        }
+
         return true;
     } catch (error) {
         console.error('Error saving holdings:', error);
