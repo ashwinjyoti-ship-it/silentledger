@@ -707,7 +707,7 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
 
         // Refresh holdings display
-        await render();
+        await displayHoldings();
     }
 
     // Back to upload
@@ -935,7 +935,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     await saveHoldings(mergedHoldings);
 
                     alert(`Successfully imported ${importedHoldings.length} holdings.`);
-                    await render();
+                    await displayHoldings();
                 } catch (error) {
                     alert('Import failed: ' + error.message);
                 }
