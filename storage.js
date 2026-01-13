@@ -91,10 +91,10 @@ async function saveHoldings(holdings) {
  * ADD A NEW HOLDING
  * Takes holding data, adds ID and timestamps, saves to storage
  */
-function addHolding(holdingData) {
+async function addHolding(holdingData) {
     try {
         // Load existing holdings
-        const holdings = loadHoldings();
+        const holdings = await loadHoldings();
 
         // Create new holding object with metadata
         // ledger_entries: array to store chronological history of this holding
@@ -115,7 +115,7 @@ function addHolding(holdingData) {
         holdings.unshift(newHolding);
 
         // Save back to localStorage
-        saveHoldings(holdings);
+        await saveHoldings(holdings);
 
         return newHolding;
     } catch (error) {
@@ -128,16 +128,16 @@ function addHolding(holdingData) {
  * DELETE A HOLDING by ID
  * Removes the holding from storage
  */
-function deleteHolding(id) {
+async function deleteHolding(id) {
     try {
         // Load all holdings
-        let holdings = loadHoldings();
+        let holdings = await loadHoldings();
 
         // Filter out the holding with matching ID
         holdings = holdings.filter(holding => holding.id !== id);
 
         // Save the updated array
-        saveHoldings(holdings);
+        await saveHoldings(holdings);
 
         return true;
     } catch (error) {
