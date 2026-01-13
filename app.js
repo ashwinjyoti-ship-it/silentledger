@@ -658,14 +658,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 500);
     });
 
-    function performImport() {
+    async function performImport() {
         const progressFill = document.getElementById('progressFill');
         const progressText = document.getElementById('progressText');
 
         const totalRows = parsedCSVData.data.length;
         let processed = 0;
 
-        const results = importHoldingsFromCSV(parsedCSVData.data, currentMapping);
+        const results = await importHoldingsFromCSV(parsedCSVData.data, currentMapping);
 
         // Animate progress
         const interval = setInterval(() => {
