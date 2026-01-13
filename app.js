@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
             holdingForm.reset();
 
             // Refresh the display
-            displayHoldings();
+            await displayHoldings();
 
             // Optional: Show success message
             showMessage('Holding added successfully');
@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
      * HANDLE DELETE BUTTON CLICK
      * Removes a holding after confirmation
      */
-    function handleDelete(event) {
+    async function handleDelete(event) {
         const holdingId = event.target.dataset.id;
 
         // Get the holding details for confirmation message
@@ -300,7 +300,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Holding deleted:', holdingId);
 
                 // Refresh the display
-                displayHoldings();
+                await displayHoldings();
 
                 // Optional: Show success message
                 showMessage('Holding deleted');
@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function() {
             closeLedgerModal();
 
             // Refresh the display
-            displayHoldings();
+            await displayHoldings();
 
             showMessage('Ledger entry added');
         } else {
@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function() {
      * HANDLE DELETE LEDGER ENTRY
      * Removes a ledger entry after confirmation
      */
-    function handleDeleteLedgerEntry(event) {
+    async function handleDeleteLedgerEntry(event) {
         const holdingId = event.target.dataset.holdingId;
         const entryId = event.target.dataset.entryId;
 
@@ -430,7 +430,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Ledger entry deleted:', entryId);
 
                 // Refresh the display
-                displayHoldings();
+                await displayHoldings();
 
                 showMessage('Ledger entry deleted');
             } else {
