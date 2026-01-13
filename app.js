@@ -475,7 +475,9 @@ document.addEventListener('DOMContentLoaded', function() {
      */
 
     // Listen for form submission
-    holdingForm.addEventListener('submit', handleFormSubmit);
+    holdingForm.addEventListener('submit', async function(event) {
+        await handleFormSubmit(event);
+    });
 
     // Ledger modal event listeners
     ledgerEntryForm.addEventListener('submit', handleLedgerEntrySubmit);
