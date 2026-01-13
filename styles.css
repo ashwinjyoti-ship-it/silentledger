@@ -905,12 +905,59 @@ button:hover {
     display: none;
 }
 
-/* Responsive for tabs */
+/* ========================================
+   MOBILE RESPONSIVE
+   ======================================== */
+
 @media (max-width: 768px) {
-    .pdf-container {
-        grid-template-columns: 1fr;
+    /* Base adjustments */
+    body {
+        padding: 10px;
+        font-size: 13px;
     }
 
+    /* Header */
+    header {
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+    }
+
+    h1 {
+        font-size: 20px;
+        letter-spacing: 1px;
+    }
+
+    .subtitle {
+        font-size: 11px;
+    }
+
+    h2 {
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    /* Form sections */
+    .add-holding-section {
+        margin-bottom: 40px;
+    }
+
+    #holdingForm {
+        max-width: 100%;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    /* Buttons */
+    .btn-primary,
+    .btn-secondary {
+        padding: 12px 20px;
+        font-size: 13px;
+        width: 100%;
+    }
+
+    /* Tab navigation */
     .tab-nav {
         flex-direction: column;
     }
@@ -918,5 +965,164 @@ button:hover {
     .tab-btn {
         border-right: none;
         border-bottom: 1px solid #000;
+        padding: 12px 15px;
+        font-size: 13px;
+    }
+
+    .tab-btn:last-child {
+        border-bottom: none;
+    }
+
+    /* Holdings grid - single column on mobile */
+    .holdings-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    /* Cards */
+    .card {
+        padding: 15px;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .card-actions {
+        width: 100%;
+        display: flex;
+        gap: 10px;
+    }
+
+    .card-actions button {
+        flex: 1;
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    /* Ledger entries */
+    .ledger-entry {
+        padding: 12px;
+    }
+
+    .ledger-entry-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    /* Modal */
+    .modal-content {
+        width: 95%;
+        max-width: 95%;
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .modal-header h2 {
+        font-size: 16px;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .modal-actions button {
+        width: 100%;
+    }
+
+    /* PDF container */
+    .pdf-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .pdf-list {
+        border-right: none;
+        border-bottom: 2px solid #000;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+    }
+
+    .pdf-viewer {
+        min-height: 400px;
+    }
+
+    /* Import section */
+    .file-upload-label {
+        padding: 30px 15px;
+        font-size: 13px;
+    }
+
+    .column-mapping {
+        gap: 15px;
+    }
+
+    .mapping-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .mapping-field,
+    .mapping-arrow,
+    .mapping-csv,
+    .mapping-sample {
+        width: 100%;
+    }
+
+    .mapping-arrow {
+        text-align: left;
+        padding-left: 10px;
+    }
+
+    .mapping-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .mapping-actions button {
+        width: 100%;
+    }
+
+    /* CSV info */
+    .csv-info {
+        padding: 15px;
+    }
+
+    /* Summary sections */
+    .card-summary {
+        padding: 12px;
+    }
+
+    .summary-row {
+        font-size: 12px;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+    body {
+        padding: 5px;
+        font-size: 12px;
+    }
+
+    h1 {
+        font-size: 18px;
+    }
+
+    h2 {
+        font-size: 13px;
+    }
+
+    .card {
+        padding: 12px;
+    }
+
+    .modal-content {
+        margin: 10px;
+        padding: 15px;
     }
 }
