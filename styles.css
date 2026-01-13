@@ -174,6 +174,34 @@ button:hover {
     margin-top: 60px;
 }
 
+/* Holdings header with export/import buttons */
+.holdings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.holdings-header h2 {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+    flex: 1;
+    min-width: 200px;
+}
+
+.holdings-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.holdings-actions button {
+    padding: 8px 15px;
+    font-size: 12px;
+}
+
 /* Grid container for cards */
 .holdings-grid {
     display: grid;

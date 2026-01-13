@@ -106,7 +106,13 @@
 
         <!-- Section to display all holdings as cards -->
         <section class="holdings-section">
-            <h2>holdings archive</h2>
+            <div class="holdings-header">
+                <h2>holdings archive</h2>
+                <div class="holdings-actions">
+                    <button id="exportDataBtn" class="btn-secondary">export data</button>
+                    <button id="importDataBtn" class="btn-secondary">import data</button>
+                </div>
+            </div>
 
             <!-- This div will be populated with cards by JavaScript -->
             <div id="holdingsGrid" class="holdings-grid">

@@ -360,3 +360,58 @@ function calculateHoldingSummary(holding) {
 
     return summary;
 }
+
+/**
+ * ========================================
+ * EXPORT / IMPORT FUNCTIONS
+ * ========================================
+ * Export and import all holdings data as JSON
+ */
+
+/**
+ * EXPORT ALL DATA as JSON string
+ * Returns JSON string of all holdings
+ */
+function exportAllData() {
+    const holdings = loadHoldings();
+    return JSON.stringify(holdings, null, 2);
+}
+
+/**
+ * IMPORT DATA from JSON string
+ * Merges imported data with existing data
+ * Returns object with success status and message
+ */
+function importAllData(jsonString) {
+    try {
+        const importedHoldings = JSON.parse(jsonString);
+
+        // Validate that it's an array
+        if (!Array.isArray(importedHoldings)) {
+            return {
+                success: false,
+                message: 'Invalid data format. Expected an array of holdings.'
+            };
+        }
+
+        // Get existing holdings
+        const existingHoldings = loadHoldings();
+
+        // Merge: Add imported holdings to existing ones
+        const mergedHoldings = [...existingHoldings, ...importedHoldings];
+
+        // Save merged data
+        saveHoldings(mergedHoldings);
+
+        return {
+            success: true,
+            message: `Successfully imported ${importedHoldings.length} holdings.`,
+            count: importedHoldings.length
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: 'Error parsing JSON data: ' + error.message
+        };
+    }
+}

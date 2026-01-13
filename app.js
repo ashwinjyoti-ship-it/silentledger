@@ -834,6 +834,61 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     /**
+     * ========================================
+     * EXPORT / IMPORT HANDLERS
+     * ========================================
+     */
+
+    // Get export/import buttons
+    const exportDataBtn = document.getElementById('exportDataBtn');
+    const importDataBtn = document.getElementById('importDataBtn');
+
+    // Export data handler
+    exportDataBtn.addEventListener('click', function() {
+        const jsonData = exportAllData();
+
+        // Create a download file
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `silent-ledger-backup-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
+    // Import data handler
+    importDataBtn.addEventListener('click', function() {
+        // Create file input
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+
+        input.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const jsonString = event.target.result;
+                const result = importAllData(jsonString);
+
+                if (result.success) {
+                    alert(result.message);
+                    render(); // Refresh display
+                } else {
+                    alert('Import failed: ' + result.message);
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        input.click();
+    });
+
+    /**
      * START THE APP
      */
     init();
