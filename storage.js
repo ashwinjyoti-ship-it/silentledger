@@ -24,38 +24,39 @@ function getCurrentTimestamp() {
 }
 
 /**
- * LOAD ALL HOLDINGS from cloud, fallback to localStorage
+ * LOAD ALL HOLDINGS from localStorage first, then check cloud for updates
  * Returns an array of holding objects
  * If nothing stored yet, returns empty array
  */
 async function loadHoldings() {
+    // Load from localStorage first (instant)
+    let localHoldings = [];
     try {
-        // Try to load from cloud first
+        const data = localStorage.getItem(STORAGE_KEY);
+        if (data) {
+            localHoldings = JSON.parse(data);
+        }
+    } catch (error) {
+        console.error('Error loading from localStorage:', error);
+    }
+
+    // Try to sync with cloud in background
+    try {
         const response = await fetch('/api/holdings');
         if (response.ok) {
             const cloudHoldings = await response.json();
-            if (cloudHoldings.length > 0) {
-                // Update localStorage with cloud data
+            // If cloud has more recent data, use it
+            if (cloudHoldings.length > localHoldings.length) {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudHoldings));
-                console.log('Loaded from cloud:', cloudHoldings.length, 'holdings');
+                console.log('Synced from cloud:', cloudHoldings.length, 'holdings');
                 return cloudHoldings;
             }
         }
     } catch (error) {
-        console.warn('Cloud load failed, using localStorage:', error);
+        console.warn('Cloud sync failed:', error);
     }
 
-    // Fallback to localStorage
-    try {
-        const data = localStorage.getItem(STORAGE_KEY);
-        if (!data) {
-            return [];
-        }
-        return JSON.parse(data);
-    } catch (error) {
-        console.error('Error loading holdings:', error);
-        return [];
-    }
+    return localHoldings;
 }
 
 /**
