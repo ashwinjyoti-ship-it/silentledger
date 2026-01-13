@@ -1,10 +1,8 @@
 name = "silentledger"
 compatibility_date = "2024-01-13"
+pages_build_output_dir = "."
 
-[site]
-bucket = "."
-
-# Production environment
-[env.production]
-name = "silentledger"
-route = "silentledger.pages.dev/*"
+[[d1_databases]]
+binding = "DB"
+database_name = "silentledger-db"
+database_id = "c7916f4e-3dcb-4cd5-8888-3686f355b364"
