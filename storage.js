@@ -150,8 +150,8 @@ async function deleteHolding(id) {
  * GET A SINGLE HOLDING by ID
  * Returns the holding object or null if not found
  */
-function getHoldingById(id) {
-    const holdings = loadHoldings();
+async function getHoldingById(id) {
+    const holdings = await loadHoldings();
     return holdings.find(holding => holding.id === id) || null;
 }
 
@@ -159,9 +159,9 @@ function getHoldingById(id) {
  * UPDATE AN EXISTING HOLDING
  * Takes ID and new data, updates the holding
  */
-function updateHolding(id, updatedData) {
+async function updateHolding(id, updatedData) {
     try {
-        const holdings = loadHoldings();
+        const holdings = await loadHoldings();
 
         // Find the index of the holding to update
         const index = holdings.findIndex(holding => holding.id === id);
@@ -293,8 +293,8 @@ async function deleteLedgerEntry(holdingId, entryId) {
  * GET ALL LEDGER ENTRIES for a holding
  * Returns array of entries, sorted by date (newest first)
  */
-function getLedgerEntries(holdingId) {
-    const holding = getHoldingById(holdingId);
+async function getLedgerEntries(holdingId) {
+    const holding = await getHoldingById(holdingId);
 
     if (!holding) {
         return [];
@@ -398,8 +398,8 @@ function calculateHoldingSummary(holding) {
  * EXPORT ALL DATA as JSON string
  * Returns JSON string of all holdings
  */
-function exportAllData() {
-    const holdings = loadHoldings();
+async function exportAllData() {
+    const holdings = await loadHoldings();
     return JSON.stringify(holdings, null, 2);
 }
 
@@ -408,7 +408,7 @@ function exportAllData() {
  * Merges imported data with existing data
  * Returns object with success status and message
  */
-function importAllData(jsonString) {
+async function importAllData(jsonString) {
     try {
         const importedHoldings = JSON.parse(jsonString);
 
@@ -421,13 +421,13 @@ function importAllData(jsonString) {
         }
 
         // Get existing holdings
-        const existingHoldings = loadHoldings();
+        const existingHoldings = await loadHoldings();
 
         // Merge: Add imported holdings to existing ones
         const mergedHoldings = [...existingHoldings, ...importedHoldings];
 
         // Save merged data
-        saveHoldings(mergedHoldings);
+        await saveHoldings(mergedHoldings);
 
         return {
             success: true,

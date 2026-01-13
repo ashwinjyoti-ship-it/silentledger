@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const holdingId = event.target.dataset.id;
 
         // Get the holding details for confirmation message
-        const holding = getHoldingById(holdingId);
+        const holding = await getHoldingById(holdingId);
 
         if (!holding) {
             alert('Holding not found');
