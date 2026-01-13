@@ -13,8 +13,7 @@ The Silent Ledger has been successfully deployed to GitHub and Cloudflare Pages.
 
 ## 🌐 Live Site
 
-**Production URL**: https://30e20841.silentledger.pages.dev
-**Main Domain**: https://silentledger.pages.dev
+**Production URL**: https://silentledger.pages.dev
 
 - ✅ 19 files uploaded
 - ✅ Security headers configured
@@ -39,7 +38,7 @@ The Silent Ledger has been successfully deployed to GitHub and Cloudflare Pages.
 
 ## 🧪 Testing the Deployment
 
-Visit: https://30e20841.silentledger.pages.dev
+Visit: https://silentledger.pages.dev
 
 The app should work exactly as it does locally:
 1. Add a holding using the form
@@ -56,7 +55,7 @@ The app should work exactly as it does locally:
 - Data is stored locally in each user's browser
 - No backend or database needed
 - Automatic deployments can be set up via GitHub integration
-- Current deployment ID: 30e20841
+- Production domain configured and active
 
 ## 🔄 Future Deployments
 
@@ -82,8 +81,7 @@ Or run the automated script:
 ## 🔗 Quick Links
 
 - **GitHub**: https://github.com/ashwinjyoti-ship-it/silentledger
-- **Live Site**: https://30e20841.silentledger.pages.dev
-- **Main Domain**: https://silentledger.pages.dev
+- **Live Site**: https://silentledger.pages.dev
 - **Cloudflare Dashboard**: https://dash.cloudflare.com → Pages → silentledger
 
 ---

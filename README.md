@@ -4,7 +4,7 @@ A personal archival app for documenting stock holdings. Simple, offline-first, w
 
 ## 🌐 Live Demo
 
-**Try it now**: https://30e20841.silentledger.pages.dev
+**Try it now**: https://silentledger.pages.dev
 
 **GitHub Repository**: https://github.com/ashwinjyoti-ship-it/silentledger
 
@@ -147,7 +147,7 @@ localStorage.removeItem('silentLedger_holdings');
 
 ## Deployment
 
-✅ **Deployed to Cloudflare Pages**: https://30e20841.silentledger.pages.dev
+✅ **Deployed to Cloudflare Pages**: https://silentledger.pages.dev
 ✅ **Source on GitHub**: https://github.com/ashwinjyoti-ship-it/silentledger
 
 See [DEPLOYMENT_COMPLETE.md](DEPLOYMENT_COMPLETE.md) for deployment details.
