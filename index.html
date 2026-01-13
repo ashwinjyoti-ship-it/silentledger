@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Silent Ledger</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Main container for the entire app -->
+    <div class="container">
+
+        <!-- Header section -->
+        <header>
+            <h1>the silent ledger</h1>
+            <p class="subtitle">personal stock archive</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-nav">
+            <button class="tab-btn active" data-tab="holdings">holdings</button>
+            <button class="tab-btn" data-tab="import">import csv</button>
+            <button class="tab-btn" data-tab="pdfs">view pdfs</button>
+        </nav>
+
+        <!-- Holdings Tab -->
+        <div id="holdingsTab" class="tab-content active">
+
+        <!-- Form to add new holdings -->
+        <section class="add-holding-section">
+            <h2>add holding</h2>
+
+            <form id="holdingForm">
+                <!-- Stock symbol input (e.g., AAPL) -->
+                <div class="form-group">
+                    <label for="symbol">symbol*</label>
+                    <input
+                        type="text"
+                        id="symbol"
+                        name="symbol"
+                        required
+                        placeholder="AAPL"
+                    >
+                </div>
+
+                <!-- Company name input -->
+                <div class="form-group">
+                    <label for="companyName">company name</label>
+                    <input
+                        type="text"
+                        id="companyName"
+                        name="companyName"
+                        placeholder="Apple Inc."
+                    >
+                </div>
+
+                <!-- Number of shares -->
+                <div class="form-group">
+                    <label for="sharesCount">shares</label>
+                    <input
+                        type="number"
+                        id="sharesCount"
+                        name="sharesCount"
+                        step="0.01"
+                        placeholder="100"
+                    >
+                </div>
+
+                <!-- Date acquired -->
+                <div class="form-group">
+                    <label for="dateAcquired">date acquired</label>
+                    <input
+                        type="date"
+                        id="dateAcquired"
+                        name="dateAcquired"
+                    >
+                </div>
+
+                <!-- Purchase price per share -->
+                <div class="form-group">
+                    <label for="purchasePrice">purchase price (per share)</label>
+                    <input
+                        type="number"
+                        id="purchasePrice"
+                        name="purchasePrice"
+                        step="0.01"
+                        placeholder="150.00"
+                    >
+                </div>
+
+                <!-- Notes field for freeform text -->
+                <div class="form-group">
+                    <label for="notes">notes</label>
+                    <textarea
+                        id="notes"
+                        name="notes"
+                        rows="3"
+                        placeholder="Additional information..."
+                    ></textarea>
+                </div>
+
+                <!-- Submit button -->
+                <button type="submit" class="btn-primary">save holding</button>
+            </form>
+        </section>
+
+        <!-- Section to display all holdings as cards -->
+        <section class="holdings-section">
+            <h2>holdings archive</h2>
+
+            <!-- This div will be populated with cards by JavaScript -->
+            <div id="holdingsGrid" class="holdings-grid">
+                <!-- Holdings cards will appear here -->
+            </div>
+
+            <!-- Message shown when no holdings exist -->
+            <div id="emptyState" class="empty-state">
+                <p>no holdings archived yet</p>
+            </div>
+        </section>
+
+        </div>
+        <!-- End Holdings Tab -->
+
+        <!-- Import CSV Tab -->
+        <div id="importTab" class="tab-content">
+            <section class="import-section">
+                <h2>import from csv</h2>
+
+                <!-- Step 1: File Upload -->
+                <div id="uploadStep" class="import-step">
+                    <p class="step-description">upload a csv file with your holdings data</p>
+
+                    <div class="file-upload-area">
+                        <input type="file" id="csvFileInput" accept=".csv" class="file-input">
+                        <label for="csvFileInput" class="file-upload-label">
+                            <span class="upload-icon">📄</span>
+                            <span class="upload-text">choose csv file</span>
+                        </label>
+                    </div>
+
+                    <div class="csv-info">
+                        <p class="info-title">expected format:</p>
+                        <p class="info-text">First row should be headers (Symbol, Company, Shares, Date, Price, Notes)</p>
+                        <p class="info-text">Subsequent rows contain your holdings data</p>
+                    </div>
+                </div>
+
+                <!-- Step 2: Column Mapping -->
+                <div id="mappingStep" class="import-step hidden">
+                    <p class="step-description">map csv columns to fields</p>
+
+                    <div id="columnMapping" class="column-mapping">
+                        <!-- Mapping UI will be generated here -->
+                    </div>
+
+                    <div class="mapping-actions">
+                        <button id="cancelMapping" class="btn-secondary">cancel</button>
+                        <button id="confirmMapping" class="btn-primary">import data</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Import Progress -->
+                <div id="progressStep" class="import-step hidden">
+                    <p class="step-description">importing...</p>
+
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+
+                    <p id="progressText" class="progress-text">Processing...</p>
+                </div>
+
+                <!-- Step 4: Import Results -->
+                <div id="resultsStep" class="import-step hidden">
+                    <p class="step-description">import complete</p>
+
+                    <div id="importResults" class="import-results">
+                        <!-- Results will be shown here -->
+                    </div>
+
+                    <button id="backToUpload" class="btn-primary">import another file</button>
+                </div>
+            </section>
+        </div>
+        <!-- End Import CSV Tab -->
+
+        <!-- View PDFs Tab -->
+        <div id="pdfsTab" class="tab-content">
+            <section class="pdf-section">
+                <h2>statement pdfs</h2>
+
+                <!-- PDF Upload -->
+                <div class="pdf-upload-area">
+                    <input type="file" id="pdfFileInput" accept=".pdf" multiple class="file-input">
+                    <label for="pdfFileInput" class="file-upload-label">
+                        <span class="upload-icon">📑</span>
+                        <span class="upload-text">upload pdf statements</span>
+                    </label>
+                </div>
+
+                <!-- PDF List and Viewer -->
+                <div class="pdf-container">
+                    <!-- PDF List -->
+                    <div class="pdf-list">
+                        <h3>uploaded pdfs</h3>
+                        <div id="pdfList" class="pdf-items">
+                            <p class="empty-message">no pdfs uploaded yet</p>
+                        </div>
+                    </div>
+
+                    <!-- PDF Viewer -->
+                    <div class="pdf-viewer">
+                        <div id="pdfViewerContainer" class="pdf-viewer-container">
+                            <p class="empty-message">select a pdf to view</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <!-- End View PDFs Tab -->
+
+    </div>
+
+    <!-- Modal for adding ledger entries -->
+    <!-- This modal appears as an overlay when user clicks "add entry" on a card -->
+    <div id="ledgerModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>add ledger entry</h2>
+                <button class="modal-close" id="closeLedgerModal">&times;</button>
+            </div>
+
+            <form id="ledgerEntryForm">
+                <!-- Hidden field to store which holding this entry belongs to -->
+                <input type="hidden" id="ledgerHoldingId" name="ledgerHoldingId">
+
+                <!-- Date of the entry -->
+                <div class="form-group">
+                    <label for="entryDate">date*</label>
+                    <input
+                        type="date"
+                        id="entryDate"
+                        name="entryDate"
+                        required
+                    >
+                </div>
+
+                <!-- Type of entry: buy, sell, transfer, note, other -->
+                <div class="form-group">
+                    <label for="entryType">entry type*</label>
+                    <select id="entryType" name="entryType" required>
+                        <option value="buy">buy</option>
+                        <option value="sell">sell</option>
+                        <option value="transfer">transfer</option>
+                        <option value="note">note</option>
+                        <option value="other">other</option>
+                    </select>
+                </div>
+
+                <!-- Number of shares (optional, mainly for buy/sell) -->
+                <div class="form-group">
+                    <label for="entryShares">shares</label>
+                    <input
+                        type="number"
+                        id="entryShares"
+                        name="entryShares"
+                        step="0.01"
+                        placeholder="e.g., 100"
+                    >
+                </div>
+
+                <!-- Price per share (optional, mainly for buy/sell) -->
+                <div class="form-group">
+                    <label for="entryPrice">price per share</label>
+                    <input
+                        type="number"
+                        id="entryPrice"
+                        name="entryPrice"
+                        step="0.01"
+                        placeholder="e.g., 150.00"
+                    >
+                </div>
+
+                <!-- Description/notes about this entry -->
+                <div class="form-group">
+                    <label for="entryDescription">description</label>
+                    <textarea
+                        id="entryDescription"
+                        name="entryDescription"
+                        rows="3"
+                        placeholder="Additional details about this entry..."
+                    ></textarea>
+                </div>
+
+                <!-- Form buttons -->
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancelLedgerEntry">cancel</button>
+                    <button type="submit" class="btn-primary">save entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Load JavaScript files -->
+    <script src="storage.js"></script>
+    <script src="import.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,922 @@
+/*
+ * The Silent Ledger Styles
+ * Inspired by teenage engineering's minimalist aesthetic
+ */
+
+/* ========================================
+   BASE STYLES
+   ======================================== */
+
+/* Reset and set base font */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    /* Monospace font like teenage engineering */
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #000;
+    background-color: #fff;
+    padding: 20px;
+}
+
+/* Main container with max width for readability */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ========================================
+   HEADER
+   ======================================== */
+
+header {
+    margin-bottom: 60px;
+    border-bottom: 2px solid #000;
+    padding-bottom: 20px;
+}
+
+h1 {
+    font-size: 24px;
+    font-weight: normal;
+    text-transform: lowercase;
+    letter-spacing: 2px;
+}
+
+.subtitle {
+    font-size: 12px;
+    text-transform: lowercase;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* ========================================
+   SECTION HEADINGS
+   ======================================== */
+
+h2 {
+    font-size: 16px;
+    font-weight: normal;
+    text-transform: lowercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #000;
+    padding-bottom: 10px;
+}
+
+/* ========================================
+   FORM STYLES
+   ======================================== */
+
+.add-holding-section {
+    margin-bottom: 60px;
+}
+
+#holdingForm {
+    max-width: 600px;
+}
+
+/* Each form field group */
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* Form labels */
+label {
+    display: block;
+    font-size: 12px;
+    text-transform: lowercase;
+    margin-bottom: 5px;
+    color: #666;
+}
+
+/* All input fields, textareas, and selects */
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    border: 1px solid #000;
+    background-color: #fff;
+    color: #000;
+}
+
+/* Focus state for inputs */
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border: 2px solid #000;
+    padding: 9px; /* Adjust padding to prevent size jump */
+}
+
+/* Textarea specific */
+textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+
+button {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    text-transform: lowercase;
+    cursor: pointer;
+    border: 1px solid #000;
+    background-color: #000;
+    color: #fff;
+    padding: 12px 24px;
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    background-color: #fff;
+    color: #000;
+}
+
+.btn-primary {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* Small buttons for delete actions */
+.btn-small {
+    padding: 6px 12px;
+    font-size: 12px;
+    width: auto;
+}
+
+/* Secondary button (outline style) */
+.btn-secondary {
+    background-color: #fff;
+    color: #000;
+}
+
+.btn-secondary:hover {
+    background-color: #000;
+    color: #fff;
+}
+
+/* ========================================
+   HOLDINGS GRID (CARD LAYOUT)
+   ======================================== */
+
+.holdings-section {
+    margin-top: 60px;
+}
+
+/* Grid container for cards */
+.holdings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Individual holding card */
+.holding-card {
+    border: 1px solid #000;
+    padding: 20px;
+    background-color: #fff;
+    transition: all 0.2s ease;
+}
+
+/* Subtle hover effect */
+.holding-card:hover {
+    box-shadow: 4px 4px 0px #000;
+    transform: translate(-2px, -2px);
+}
+
+/* Card header with symbol */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #000;
+}
+
+.card-symbol {
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Company name */
+.card-company {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+/* Data rows in card */
+.card-data {
+    margin-bottom: 15px;
+}
+
+.card-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+.card-label {
+    color: #666;
+    text-transform: lowercase;
+}
+
+.card-value {
+    text-align: right;
+}
+
+/* Notes section in card */
+.card-notes {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #ddd;
+}
+
+.card-notes-label {
+    font-size: 11px;
+    color: #666;
+    text-transform: lowercase;
+    margin-bottom: 5px;
+}
+
+.card-notes-text {
+    font-size: 12px;
+    color: #000;
+    white-space: pre-wrap; /* Preserve line breaks */
+}
+
+/* Card actions (delete button) */
+.card-actions {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #ddd;
+    display: flex;
+    gap: 10px;
+}
+
+/* ========================================
+   CALCULATED SUMMARY SECTION
+   ======================================== */
+
+/* Summary section container */
+.card-summary {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid #000;
+    background-color: #fafafa;
+    padding: 15px;
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* Summary title */
+.card-summary-title {
+    font-size: 11px;
+    color: #666;
+    text-transform: lowercase;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+/* Summary data rows */
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+/* Highlighted row (current shares) */
+.summary-row-highlight {
+    font-weight: bold;
+    font-size: 13px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+.summary-label {
+    color: #666;
+    text-transform: lowercase;
+}
+
+.summary-value {
+    text-align: right;
+    color: #000;
+    font-weight: normal;
+}
+
+/* Make the highlighted row value bold */
+.summary-row-highlight .summary-value {
+    font-weight: bold;
+}
+
+/* ========================================
+   EMPTY STATE
+   ======================================== */
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+    font-size: 14px;
+}
+
+/* Hide empty state by default */
+.empty-state.hidden {
+    display: none;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    .holdings-grid {
+        grid-template-columns: 1fr;
+    }
+
+    header {
+        margin-bottom: 40px;
+    }
+
+    .add-holding-section {
+        margin-bottom: 40px;
+    }
+}
+
+/* ========================================
+   LEDGER SECTION (inside holding cards)
+   ======================================== */
+
+/* Ledger section container */
+.card-ledger {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #ddd;
+}
+
+/* Ledger header with title and toggle button */
+.card-ledger-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.card-ledger-title {
+    font-size: 11px;
+    color: #666;
+    text-transform: lowercase;
+}
+
+/* Toggle button to show/hide ledger entries */
+.btn-toggle-ledger {
+    padding: 4px 8px;
+    font-size: 11px;
+    background-color: #fff;
+    color: #666;
+    border: 1px solid #ddd;
+}
+
+.btn-toggle-ledger:hover {
+    border-color: #000;
+    color: #000;
+}
+
+/* Container for all ledger entries */
+.ledger-entries {
+    margin-top: 10px;
+}
+
+/* Hide ledger entries by default */
+.ledger-entries.hidden {
+    display: none;
+}
+
+/* Individual ledger entry */
+.ledger-entry {
+    padding: 10px;
+    border-left: 2px solid #ddd;
+    margin-bottom: 10px;
+    font-size: 11px;
+    background-color: #fafafa;
+}
+
+/* Different border colors for different entry types */
+.ledger-entry[data-type="buy"] {
+    border-left-color: #000;
+}
+
+.ledger-entry[data-type="sell"] {
+    border-left-color: #666;
+}
+
+.ledger-entry[data-type="transfer"] {
+    border-left-color: #999;
+}
+
+.ledger-entry[data-type="note"] {
+    border-left-color: #ddd;
+}
+
+/* Entry header with type and date */
+.ledger-entry-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.ledger-entry-type {
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 10px;
+}
+
+.ledger-entry-date {
+    color: #666;
+    font-size: 10px;
+}
+
+/* Entry details (shares, price) */
+.ledger-entry-details {
+    margin-bottom: 5px;
+    color: #000;
+}
+
+/* Entry description */
+.ledger-entry-description {
+    color: #666;
+    font-size: 10px;
+    margin-top: 5px;
+    white-space: pre-wrap;
+}
+
+/* Delete button for ledger entries */
+.ledger-entry-delete {
+    margin-top: 5px;
+    padding: 3px 6px;
+    font-size: 10px;
+}
+
+/* Empty ledger message */
+.ledger-empty {
+    padding: 10px;
+    text-align: center;
+    color: #999;
+    font-size: 11px;
+    font-style: italic;
+}
+
+/* ========================================
+   MODAL STYLES
+   ======================================== */
+
+/* Modal overlay (covers entire screen) */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Hide modal by default */
+.modal.hidden {
+    display: none;
+}
+
+/* Modal content box */
+.modal-content {
+    background-color: #fff;
+    border: 2px solid #000;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 30px;
+}
+
+/* Modal header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    border: none;
+    padding: 0;
+}
+
+/* Close button (X) */
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: auto;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: #666;
+}
+
+/* Modal actions (button row at bottom of form) */
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-actions button {
+    flex: 1;
+}
+
+/* ========================================
+   TAB NAVIGATION
+   ======================================== */
+
+.tab-nav {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid #000;
+    margin-bottom: 40px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 15px 20px;
+    background: #fff;
+    border: none;
+    border-right: 1px solid #000;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    text-transform: lowercase;
+    cursor: pointer;
+    transition: background 0.2s;
+    color: #000; /* Black text by default */
+}
+
+.tab-btn:last-child {
+    border-right: none;
+}
+
+.tab-btn:hover {
+    background: #f5f5f5;
+    color: #000;
+}
+
+.tab-btn.active {
+    background: #000;
+    color: #fff;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* ========================================
+   IMPORT CSV SECTION
+   ======================================== */
+
+.import-section {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.import-step {
+    margin-bottom: 40px;
+}
+
+.step-description {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+    text-transform: lowercase;
+}
+
+/* File Upload Area */
+.file-upload-area {
+    margin-bottom: 30px;
+}
+
+.file-input {
+    display: none;
+}
+
+.file-upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 40px;
+    border: 2px dashed #000;
+    background: #fafafa;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.file-upload-label:hover {
+    background: #f0f0f0;
+    border-color: #000;
+}
+
+.upload-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.upload-text {
+    font-size: 14px;
+    text-transform: lowercase;
+}
+
+/* CSV Info */
+.csv-info {
+    padding: 20px;
+    background: #fafafa;
+    border: 1px solid #ddd;
+}
+
+.info-title {
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: lowercase;
+    margin-bottom: 10px;
+}
+
+.info-text {
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+/* Column Mapping */
+.column-mapping {
+    margin-bottom: 30px;
+}
+
+.mapping-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 15px;
+    padding: 15px;
+    background: #fafafa;
+    border: 1px solid #ddd;
+}
+
+.mapping-label {
+    font-size: 12px;
+    color: #666;
+    text-transform: lowercase;
+    margin-bottom: 5px;
+}
+
+.mapping-value {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.mapping-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.mapping-actions button {
+    flex: 1;
+}
+
+/* Progress Bar */
+.progress-bar {
+    width: 100%;
+    height: 30px;
+    background: #f0f0f0;
+    border: 1px solid #000;
+    margin-bottom: 20px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #000;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.progress-text {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Import Results */
+.import-results {
+    padding: 30px;
+    background: #fafafa;
+    border: 1px solid #000;
+    margin-bottom: 30px;
+}
+
+.result-stat {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.result-stat:last-child {
+    border-bottom: none;
+}
+
+.result-label {
+    font-size: 14px;
+    text-transform: lowercase;
+}
+
+.result-value {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.result-value.success {
+    color: #000;
+}
+
+.result-value.error {
+    color: #666;
+}
+
+/* ========================================
+   PDF VIEWER SECTION
+   ======================================== */
+
+.pdf-section {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.pdf-upload-area {
+    margin-bottom: 30px;
+}
+
+.pdf-container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 30px;
+    min-height: 600px;
+}
+
+/* PDF List */
+.pdf-list {
+    border: 1px solid #000;
+    padding: 20px;
+    background: #fafafa;
+}
+
+.pdf-list h3 {
+    font-size: 14px;
+    font-weight: normal;
+    text-transform: lowercase;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #000;
+    padding-bottom: 10px;
+}
+
+.pdf-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pdf-item {
+    padding: 15px;
+    border: 1px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pdf-item:hover {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+.pdf-item.active {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+.pdf-item-name {
+    font-size: 12px;
+    margin-bottom: 5px;
+    word-break: break-all;
+}
+
+.pdf-item-size {
+    font-size: 10px;
+    color: #999;
+}
+
+.pdf-item.active .pdf-item-size {
+    color: #ccc;
+}
+
+.pdf-item-delete {
+    margin-top: 10px;
+    padding: 5px 10px;
+    font-size: 10px;
+}
+
+/* PDF Viewer */
+.pdf-viewer {
+    border: 1px solid #000;
+    padding: 20px;
+    background: #fff;
+}
+
+.pdf-viewer-container {
+    width: 100%;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pdf-viewer-container embed,
+.pdf-viewer-container iframe {
+    width: 100%;
+    height: 800px;
+    border: none;
+}
+
+.empty-message {
+    color: #999;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+.hidden {
+    display: none;
+}
+
+/* Responsive for tabs */
+@media (max-width: 768px) {
+    .pdf-container {
+        grid-template-columns: 1fr;
+    }
+
+    .tab-nav {
+        flex-direction: column;
+    }
+
+    .tab-btn {
+        border-right: none;
+        border-bottom: 1px solid #000;
+    }
+}
