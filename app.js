@@ -839,9 +839,56 @@ document.addEventListener('DOMContentLoaded', function() {
      * ========================================
      */
 
-    // Get export/import buttons
+    // Get export/import/sync buttons
     const exportDataBtn = document.getElementById('exportDataBtn');
     const importDataBtn = document.getElementById('importDataBtn');
+    const syncToCloudBtn = document.getElementById('syncToCloudBtn');
+    const loadFromCloudBtn = document.getElementById('loadFromCloudBtn');
+
+    // Sync to cloud handler
+    syncToCloudBtn.addEventListener('click', async function() {
+        const holdings = loadHoldings();
+
+        try {
+            const response = await fetch('/api/sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ holdings })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert(`✓ Synced ${result.synced} holdings to cloud`);
+            } else {
+                alert('Sync failed: ' + result.error);
+            }
+        } catch (error) {
+            alert('Sync failed: ' + error.message);
+        }
+    });
+
+    // Load from cloud handler
+    loadFromCloudBtn.addEventListener('click', async function() {
+        try {
+            const response = await fetch('/api/holdings');
+            const cloudHoldings = await response.json();
+
+            if (response.ok && cloudHoldings.length > 0) {
+                const confirmed = confirm(`Load ${cloudHoldings.length} holdings from cloud? This will replace your local data.`);
+
+                if (confirmed) {
+                    saveHoldings(cloudHoldings);
+                    render();
+                    alert(`✓ Loaded ${cloudHoldings.length} holdings from cloud`);
+                }
+            } else {
+                alert('No data found in cloud');
+            }
+        } catch (error) {
+            alert('Load failed: ' + error.message);
+        }
+    });
 
     // Export data handler
     exportDataBtn.addEventListener('click', function() {
