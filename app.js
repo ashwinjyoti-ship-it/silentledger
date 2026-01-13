@@ -683,7 +683,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     }
 
-    function showResults(results) {
+    async function showResults(results) {
         // Hide progress, show results
         progressStep.classList.add('hidden');
         resultsStep.classList.remove('hidden');
