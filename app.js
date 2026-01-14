@@ -279,6 +279,8 @@ document.addEventListener('DOMContentLoaded', function() {
     async function handleDelete(event) {
         const holdingId = event.target.dataset.id;
 
+        console.log('Delete clicked for ID:', holdingId);
+
         // Get the holding details for confirmation message
         const holding = await getHoldingById(holdingId);
 
@@ -292,15 +294,23 @@ document.addEventListener('DOMContentLoaded', function() {
             `Delete ${holding.symbol}?\n\nThis action cannot be undone.`
         );
 
+        console.log('Deletion confirmed:', confirmed);
+
         if (confirmed) {
+            console.log('Starting delete process...');
+            
             // Delete from storage
             const success = await deleteHolding(holdingId);
+
+            console.log('Delete result:', success);
 
             if (success) {
                 console.log('Holding deleted:', holdingId);
 
                 // Refresh the display
+                console.log('Refreshing display...');
                 await displayHoldings();
+                console.log('Display refreshed');
 
                 // Optional: Show success message
                 showMessage('Holding deleted');
@@ -424,7 +434,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const confirmed = confirm('Delete this ledger entry?\n\nThis action cannot be undone.');
 
         if (confirmed) {
-            const success = deleteLedgerEntry(holdingId, entryId);
+            const success = await deleteLedgerEntry(holdingId, entryId);
 
             if (success) {
                 console.log('Ledger entry deleted:', entryId);
