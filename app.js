@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div class="card-section-row ${summary.totalRealizedProfit >= 0 ? 'profit-positive' : 'profit-negative'}">
                         <span class="card-section-label">Total Realized Profit:</span>
-                        <span class="card-section-value">${summary.totalRealizedProfit >= 0 ? '+' : ''}₹${formatNumber(Math.abs(summary.totalRealizedProfit))}</span>
+                        <span class="card-section-value">${summary.totalRealizedProfit >= 0 ? '+' : '-'}₹${formatNumber(Math.abs(summary.totalRealizedProfit))}</span>
                     </div>
                 </div>
             ` : ''}
