@@ -170,22 +170,46 @@ async function addHolding(holdingData) {
 
 /**
  * DELETE A HOLDING by ID
- * Removes the holding from storage
+ * Removes the holding from storage and cloud database
  */
 async function deleteHolding(id) {
     try {
+        // Update sync status
+        updateSyncStatus('syncing', 'Deleting...');
+
         // Load all holdings
         let holdings = await loadHoldings();
 
         // Filter out the holding with matching ID
         holdings = holdings.filter(holding => holding.id !== id);
 
-        // Save the updated array
+        // Save the updated array (this syncs to cloud via saveHoldings)
         await saveHoldings(holdings);
+
+        // Also explicitly call the cloud DELETE endpoint to ensure deletion
+        try {
+            const response = await fetch('/api/holdings', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+
+            if (response.ok) {
+                console.log('✓ Deleted from cloud database');
+                updateSyncStatus('success', '✓ Holding deleted');
+            } else {
+                console.warn('Cloud delete failed, but removed from local storage');
+                updateSyncStatus('warning', '⚠ Deleted locally (cloud sync failed)');
+            }
+        } catch (cloudError) {
+            console.warn('Cloud delete API failed:', cloudError);
+            updateSyncStatus('warning', '⚠ Deleted locally (cloud unavailable)');
+        }
 
         return true;
     } catch (error) {
         console.error('Error deleting holding:', error);
+        updateSyncStatus('error', '✗ Error deleting');
         return false;
     }
 }

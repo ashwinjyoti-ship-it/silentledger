@@ -156,8 +156,9 @@ async function importHoldingsFromCSV(data, mapping) {
         errorDetails: []
     };
 
-    // Get existing holdings
-    const holdings = await loadHoldings();
+    // Get existing holdings to check for duplicates
+    const existingHoldings = await loadHoldings();
+    const newHoldings = [];
 
     for (let index = 0; index < data.length; index++) {
         const row = data[index];
@@ -183,7 +184,8 @@ async function importHoldingsFromCSV(data, mapping) {
                 updated_at: new Date().toISOString()
             };
 
-            holdings.push(newHolding);
+            // Add to new holdings array (not to existing holdings)
+            newHoldings.push(newHolding);
             results.success++;
         } catch (error) {
             results.errors++;
@@ -194,8 +196,9 @@ async function importHoldingsFromCSV(data, mapping) {
         }
     }
 
-    // Save all imported holdings at once
-    await saveHoldings(holdings);
+    // Combine existing holdings with new ones and save
+    const allHoldings = [...existingHoldings, ...newHoldings];
+    await saveHoldings(allHoldings);
 
     return results;
 }

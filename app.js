@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (confirmed) {
             // Delete from storage
-            const success = deleteHolding(holdingId);
+            const success = await deleteHolding(holdingId);
 
             if (success) {
                 console.log('Holding deleted:', holdingId);
