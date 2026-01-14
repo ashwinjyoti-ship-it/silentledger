@@ -1,7 +1,45 @@
 // API endpoint for syncing all data
 
+// Helper function to ensure tables exist
+async function ensureTablesExist(env) {
+    try {
+        await env.DB.prepare(`
+            CREATE TABLE IF NOT EXISTS holdings (
+                id TEXT PRIMARY KEY,
+                symbol TEXT NOT NULL,
+                company_name TEXT,
+                shares_count REAL,
+                date_acquired TEXT,
+                purchase_price REAL,
+                notes TEXT,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            )
+        `).run();
+
+        await env.DB.prepare(`
+            CREATE TABLE IF NOT EXISTS ledger_entries (
+                id TEXT PRIMARY KEY,
+                holding_id TEXT NOT NULL,
+                date TEXT NOT NULL,
+                entry_type TEXT NOT NULL,
+                shares REAL,
+                price_per_share REAL,
+                description TEXT,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (holding_id) REFERENCES holdings(id) ON DELETE CASCADE
+            )
+        `).run();
+    } catch (error) {
+        console.error('Error ensuring tables exist:', error);
+    }
+}
+
 export async function onRequestPost({ request, env }) {
     try {
+        // Ensure tables exist before syncing
+        await ensureTablesExist(env);
+
         const { holdings } = await request.json();
 
         // Begin transaction by processing all holdings

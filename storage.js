@@ -29,6 +29,9 @@ function getCurrentTimestamp() {
  * If nothing stored yet, returns empty array
  */
 async function loadHoldings() {
+    // Update sync status
+    updateSyncStatus('loading', 'Loading data...');
+
     // Load from localStorage first (instant)
     let localHoldings = [];
     try {
@@ -45,18 +48,47 @@ async function loadHoldings() {
         const response = await fetch('/api/holdings');
         if (response.ok) {
             const cloudHoldings = await response.json();
-            // If cloud has more recent data, use it
-            if (cloudHoldings.length > localHoldings.length) {
+            
+            // Always prefer cloud data if it exists
+            if (cloudHoldings.length > 0) {
+                // If cloud has data, use it and update localStorage
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudHoldings));
-                console.log('Synced from cloud:', cloudHoldings.length, 'holdings');
+                console.log('✓ Synced from cloud:', cloudHoldings.length, 'holdings');
+                updateSyncStatus('success', `✓ Loaded ${cloudHoldings.length} holdings from cloud`);
                 return cloudHoldings;
+            } else if (localHoldings.length > 0) {
+                // Cloud is empty but local has data - sync local to cloud
+                console.log('Cloud empty, syncing local data to cloud...');
+                await saveHoldings(localHoldings);
+                updateSyncStatus('success', `✓ Synced ${localHoldings.length} holdings to cloud`);
+                return localHoldings;
+            } else {
+                updateSyncStatus('idle', 'No data - add your first holding');
+                return [];
             }
+        } else {
+            // Cloud request failed, use local data
+            console.warn('Cloud unavailable, using local data');
+            updateSyncStatus('warning', `⚠ Offline mode - ${localHoldings.length} holdings from local storage`);
+            return localHoldings;
         }
     } catch (error) {
         console.warn('Cloud sync failed:', error);
+        updateSyncStatus('warning', `⚠ Offline mode - ${localHoldings.length} holdings from local storage`);
+        return localHoldings;
     }
+}
 
-    return localHoldings;
+/**
+ * UPDATE SYNC STATUS INDICATOR
+ * Shows user the current sync status
+ */
+function updateSyncStatus(status, message) {
+    const statusElement = document.getElementById('sync-status');
+    if (statusElement) {
+        statusElement.textContent = message;
+        statusElement.className = `sync-status sync-${status}`;
+    }
 }
 
 /**
@@ -65,24 +97,36 @@ async function loadHoldings() {
  */
 async function saveHoldings(holdings) {
     try {
-        // Convert the array to JSON string and save
+        // Update sync status
+        updateSyncStatus('syncing', 'Saving...');
+
+        // Convert the array to JSON string and save locally first
         localStorage.setItem(STORAGE_KEY, JSON.stringify(holdings));
 
         // Auto-sync to cloud
         try {
-            await fetch('/api/sync', {
+            const response = await fetch('/api/sync', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ holdings })
             });
-            console.log('✓ Auto-synced to cloud');
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('✓ Auto-synced to cloud:', result);
+                updateSyncStatus('success', `✓ Saved ${holdings.length} holdings to cloud`);
+            } else {
+                throw new Error('Cloud sync failed');
+            }
         } catch (syncError) {
             console.warn('Cloud sync failed (offline?):', syncError);
+            updateSyncStatus('warning', '⚠ Saved locally only (cloud unavailable)');
         }
 
         return true;
     } catch (error) {
         console.error('Error saving holdings:', error);
+        updateSyncStatus('error', '✗ Error saving data');
         return false;
     }
 }
