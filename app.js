@@ -30,10 +30,11 @@ document.addEventListener('DOMContentLoaded', function() {
     /**
      * DISPLAY ALL HOLDINGS
      * Loads holdings from storage and creates cards for each
+     * Optimized: uses localStorage for instant display
      */
     async function displayHoldings() {
-        // Load all holdings from localStorage
-        const holdings = await loadHoldings();
+        // Load from localStorage for instant display (no cloud fetch)
+        const holdings = loadHoldingsLocal();
 
         // Clear the grid
         holdingsGrid.innerHTML = '';
@@ -61,16 +62,25 @@ document.addEventListener('DOMContentLoaded', function() {
     function createHoldingCard(holding) {
         // Create the main card container
         const card = document.createElement('div');
-        card.className = 'holding-card';
+        card.className = selectMode ? 'holding-card select-mode' : 'holding-card';
         card.dataset.id = holding.id; // Store ID for reference
 
         // Calculate summary from ledger entries
         const summary = calculateHoldingSummary(holding);
 
+        // Checkbox for select mode
+        const checkboxHtml = selectMode ? `
+            <input type="checkbox" 
+                   class="holding-checkbox" 
+                   data-id="${holding.id}"
+                   ${selectedHoldings.has(holding.id) ? 'checked' : ''}>
+        ` : '';
+
         // Build the card HTML
         card.innerHTML = `
             <!-- Card header with symbol and company -->
-            <div class="card-header">
+            <div class="card-header ${selectMode ? 'holding-card-header-with-checkbox' : ''}">
+                ${checkboxHtml}
                 <div class="card-symbol">${holding.symbol}</div>
             </div>
 
@@ -181,6 +191,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const toggleLedgerBtn = card.querySelector('.btn-toggle-ledger');
         toggleLedgerBtn.addEventListener('click', handleToggleLedger);
+
+        // Add checkbox event listener if in select mode
+        if (selectMode) {
+            const checkbox = card.querySelector('.holding-checkbox');
+            if (checkbox) {
+                checkbox.addEventListener('change', function(e) {
+                    if (e.target.checked) {
+                        selectedHoldings.add(holding.id);
+                    } else {
+                        selectedHoldings.delete(holding.id);
+                    }
+                    updateDeleteButtonText();
+                });
+            }
+        }
 
         return card;
     }
@@ -966,6 +991,137 @@ document.addEventListener('DOMContentLoaded', function() {
 
         input.click();
     });
+    }
+
+    /**
+     * BULK DELETE FUNCTIONALITY
+     */
+    let selectMode = false;
+    const selectedHoldings = new Set();
+
+    const toggleSelectModeBtn = document.getElementById('toggleSelectModeBtn');
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    const deselectAllBtn = document.getElementById('deselectAllBtn');
+    const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+
+    // Toggle select mode
+    if (toggleSelectModeBtn) {
+        toggleSelectModeBtn.addEventListener('click', function() {
+            selectMode = !selectMode;
+            selectedHoldings.clear();
+
+            if (selectMode) {
+                toggleSelectModeBtn.textContent = 'cancel';
+                selectAllBtn.style.display = 'inline-block';
+                deselectAllBtn.style.display = 'inline-block';
+                deleteSelectedBtn.style.display = 'inline-block';
+            } else {
+                toggleSelectModeBtn.textContent = 'bulk delete';
+                selectAllBtn.style.display = 'none';
+                deselectAllBtn.style.display = 'none';
+                deleteSelectedBtn.style.display = 'none';
+            }
+
+            // Re-render holdings with/without checkboxes
+            displayHoldings();
+        });
+    }
+
+    // Select all
+    if (selectAllBtn) {
+        selectAllBtn.addEventListener('click', function() {
+            const checkboxes = document.querySelectorAll('.holding-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = true;
+                selectedHoldings.add(cb.dataset.id);
+            });
+            updateDeleteButtonText();
+        });
+    }
+
+    // Deselect all
+    if (deselectAllBtn) {
+        deselectAllBtn.addEventListener('click', function() {
+            const checkboxes = document.querySelectorAll('.holding-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = false;
+            });
+            selectedHoldings.clear();
+            updateDeleteButtonText();
+        });
+    }
+
+    // Delete selected holdings
+    if (deleteSelectedBtn) {
+        deleteSelectedBtn.addEventListener('click', async function() {
+            if (selectedHoldings.size === 0) {
+                alert('No holdings selected');
+                return;
+            }
+
+            const confirmed = confirm(
+                `Delete ${selectedHoldings.size} holding(s)?\n\nThis action cannot be undone.`
+            );
+
+            if (confirmed) {
+                updateSyncStatus('syncing', `Deleting ${selectedHoldings.size} holdings...`);
+
+                // Get current holdings from localStorage
+                let holdings = loadHoldingsLocal();
+
+                // Filter out selected holdings
+                const idsToDelete = Array.from(selectedHoldings);
+                holdings = holdings.filter(h => !idsToDelete.includes(h.id));
+
+                // Save to localStorage immediately
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(holdings));
+
+                // Sync to cloud in background
+                try {
+                    const deletePromises = idsToDelete.map(id =>
+                        fetch('/api/holdings', {
+                            method: 'DELETE',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id })
+                        })
+                    );
+
+                    // Also sync the full list
+                    deletePromises.push(
+                        fetch('/api/sync', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ holdings })
+                        })
+                    );
+
+                    await Promise.all(deletePromises);
+                    updateSyncStatus('success', `✓ Deleted ${selectedHoldings.size} holdings`);
+                } catch (error) {
+                    console.warn('Cloud sync failed:', error);
+                    updateSyncStatus('warning', `⚠ Deleted locally (${selectedHoldings.size} holdings)`);
+                }
+
+                // Clear selection and exit select mode
+                selectedHoldings.clear();
+                selectMode = false;
+                toggleSelectModeBtn.textContent = 'bulk delete';
+                selectAllBtn.style.display = 'none';
+                deselectAllBtn.style.display = 'none';
+                deleteSelectedBtn.style.display = 'none';
+
+                // Refresh display
+                displayHoldings();
+                showMessage(`Deleted ${idsToDelete.length} holdings`);
+            }
+        });
+    }
+
+    function updateDeleteButtonText() {
+        if (deleteSelectedBtn) {
+            const count = selectedHoldings.size;
+            deleteSelectedBtn.textContent = count > 0 ? `delete selected (${count})` : 'delete selected';
+        }
     }
 
     /**

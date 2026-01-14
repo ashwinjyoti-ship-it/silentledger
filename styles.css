@@ -222,6 +222,36 @@ button:hover {
     color: #fff;
 }
 
+/* Danger button (red for delete actions) */
+.btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+    border: 2px solid #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+/* Checkbox styles for selection */
+.holding-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.holding-card.select-mode {
+    padding-left: 15px;
+}
+
+.holding-card-header-with-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 /* ========================================
    HOLDINGS GRID (CARD LAYOUT)
    ======================================== */

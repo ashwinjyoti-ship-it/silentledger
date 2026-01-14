@@ -1,0 +1,55 @@
+MANUAL DEPLOYMENT INSTRUCTIONS
+================================
+
+Since the files are in the sandbox, you have TWO options:
+
+OPTION 1 (RECOMMENDED): Connect to GitHub
+------------------------------------------
+1. Go back from the upload page
+2. In silentledger settings, look for "Git integration" or "Connect to Git"
+3. Connect to repository: https://github.com/ashwinjyoti-ship-it/silentledger
+4. Set production branch: main
+5. Enable automatic deployments
+6. Click "Deploy now" or "Retry deployment"
+
+This is the BEST option - future updates will auto-deploy!
+
+OPTION 2: Use Wrangler CLI from Sandbox
+----------------------------------------
+We can deploy directly from this sandbox using wrangler:
+
+1. I'll need a Cloudflare API token
+2. You can create one at: https://dash.cloudflare.com/profile/api-tokens
+3. Click "Create Token"
+4. Use "Edit Cloudflare Workers" template
+5. Copy the token
+6. Provide it to me, and I'll deploy directly
+
+OPTION 3: Manual File Upload
+-----------------------------
+If you really want to use the upload page:
+
+1. Clone the repo on your local machine:
+   git clone https://github.com/ashwinjyoti-ship-it/silentledger.git
+   
+2. Navigate to the folder
+   
+3. Select these files/folders and drag to the upload box:
+   - index.html
+   - styles.css
+   - app.js
+   - storage.js
+   - import.js
+   - api-storage.js
+   - functions/ (entire folder)
+   - _headers
+   - _redirects
+
+4. Click "Save and deploy"
+
+RECOMMENDED: Go with OPTION 1 (GitHub connection)
+This is the standard way and will make future updates automatic!
+
+Current files that need to be deployed are on the main branch at:
+https://github.com/ashwinjyoti-ship-it/silentledger
+Latest commit: 38e7c23
