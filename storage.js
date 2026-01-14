@@ -188,7 +188,7 @@ async function addHolding(holdingData) {
 /**
  * DELETE A HOLDING by ID
  * Removes the holding from storage and cloud database
- * Optimized for speed - uses localStorage and parallel API calls
+ * Optimized for speed - uses localStorage and background cloud sync
  */
 async function deleteHolding(id) {
     try {
@@ -212,8 +212,11 @@ async function deleteHolding(id) {
         // Save to localStorage immediately (instant UI update)
         localStorage.setItem(STORAGE_KEY, JSON.stringify(holdings));
 
-        // Call both cloud APIs in parallel (faster)
-        const deletePromises = [
+        // Update status immediately - don't wait for cloud
+        updateSyncStatus('success', '✓ Holding deleted');
+
+        // Fire cloud sync in background (don't await - this is the key!)
+        Promise.all([
             // Delete from database
             fetch('/api/holdings', {
                 method: 'DELETE',
@@ -226,24 +229,17 @@ async function deleteHolding(id) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ holdings })
             })
-        ];
-
-        // Wait for both to complete
-        try {
-            const [deleteResponse, syncResponse] = await Promise.all(deletePromises);
-            
+        ]).then(([deleteResponse, syncResponse]) => {
             if (deleteResponse.ok && syncResponse.ok) {
-                console.log('✓ Deleted from cloud database and synced');
-                updateSyncStatus('success', '✓ Holding deleted');
+                console.log('✓ Background sync to cloud completed');
             } else {
-                console.warn('Cloud sync partially failed, but deleted locally');
-                updateSyncStatus('warning', '⚠ Deleted locally (cloud sync issues)');
+                console.warn('Cloud sync had issues, but data deleted locally');
             }
-        } catch (cloudError) {
-            console.warn('Cloud API failed:', cloudError);
-            updateSyncStatus('warning', '⚠ Deleted locally (cloud unavailable)');
-        }
+        }).catch(cloudError => {
+            console.warn('Cloud API failed (background):', cloudError);
+        });
 
+        // Return immediately - don't wait for cloud
         return true;
     } catch (error) {
         console.error('Error deleting holding:', error);
