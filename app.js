@@ -282,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Delete clicked for ID:', holdingId);
 
         // Get the holding details for confirmation message
-        const holding = await getHoldingById(holdingId);
+        const holding = getHoldingById(holdingId);  // Now synchronous - no await needed
 
         if (!holding) {
             alert('Holding not found');
@@ -299,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (confirmed) {
             console.log('Starting delete process...');
             
-            // Delete from storage
+            // Delete from storage (now optimized!)
             const success = await deleteHolding(holdingId);
 
             console.log('Delete result:', success);

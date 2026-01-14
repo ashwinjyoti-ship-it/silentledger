@@ -24,6 +24,23 @@ function getCurrentTimestamp() {
 }
 
 /**
+ * LOAD HOLDINGS FROM LOCALSTORAGE ONLY (FAST)
+ * Used for operations that need quick access without cloud sync
+ * Returns an array of holding objects from localStorage
+ */
+function loadHoldingsLocal() {
+    try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        if (data) {
+            return JSON.parse(data);
+        }
+    } catch (error) {
+        console.error('Error loading from localStorage:', error);
+    }
+    return [];
+}
+
+/**
  * LOAD ALL HOLDINGS from localStorage first, then check cloud for updates
  * Returns an array of holding objects
  * If nothing stored yet, returns empty array
@@ -171,38 +188,59 @@ async function addHolding(holdingData) {
 /**
  * DELETE A HOLDING by ID
  * Removes the holding from storage and cloud database
+ * Optimized for speed - uses localStorage and parallel API calls
  */
 async function deleteHolding(id) {
     try {
         // Update sync status
         updateSyncStatus('syncing', 'Deleting...');
 
-        // Load all holdings
-        let holdings = await loadHoldings();
+        // Load from localStorage (fast - no cloud call)
+        let holdings = loadHoldingsLocal();
 
         // Filter out the holding with matching ID
+        const originalLength = holdings.length;
         holdings = holdings.filter(holding => holding.id !== id);
 
-        // Save the updated array (this syncs to cloud via saveHoldings)
-        await saveHoldings(holdings);
+        if (holdings.length === originalLength) {
+            // Holding not found
+            console.warn('Holding not found in local storage');
+            updateSyncStatus('warning', '⚠ Holding not found');
+            return false;
+        }
 
-        // Also explicitly call the cloud DELETE endpoint to ensure deletion
-        try {
-            const response = await fetch('/api/holdings', {
+        // Save to localStorage immediately (instant UI update)
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(holdings));
+
+        // Call both cloud APIs in parallel (faster)
+        const deletePromises = [
+            // Delete from database
+            fetch('/api/holdings', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id })
-            });
+            }),
+            // Sync full list to cloud
+            fetch('/api/sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ holdings })
+            })
+        ];
 
-            if (response.ok) {
-                console.log('✓ Deleted from cloud database');
+        // Wait for both to complete
+        try {
+            const [deleteResponse, syncResponse] = await Promise.all(deletePromises);
+            
+            if (deleteResponse.ok && syncResponse.ok) {
+                console.log('✓ Deleted from cloud database and synced');
                 updateSyncStatus('success', '✓ Holding deleted');
             } else {
-                console.warn('Cloud delete failed, but removed from local storage');
-                updateSyncStatus('warning', '⚠ Deleted locally (cloud sync failed)');
+                console.warn('Cloud sync partially failed, but deleted locally');
+                updateSyncStatus('warning', '⚠ Deleted locally (cloud sync issues)');
             }
         } catch (cloudError) {
-            console.warn('Cloud delete API failed:', cloudError);
+            console.warn('Cloud API failed:', cloudError);
             updateSyncStatus('warning', '⚠ Deleted locally (cloud unavailable)');
         }
 
@@ -217,9 +255,10 @@ async function deleteHolding(id) {
 /**
  * GET A SINGLE HOLDING by ID
  * Returns the holding object or null if not found
+ * Uses localStorage for speed
  */
-async function getHoldingById(id) {
-    const holdings = await loadHoldings();
+function getHoldingById(id) {
+    const holdings = loadHoldingsLocal();
     return holdings.find(holding => holding.id === id) || null;
 }
 
