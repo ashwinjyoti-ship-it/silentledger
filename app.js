@@ -849,8 +849,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const syncToCloudBtn = document.getElementById('syncToCloudBtn');
     const loadFromCloudBtn = document.getElementById('loadFromCloudBtn');
 
-    // Sync to cloud handler
-    syncToCloudBtn.addEventListener('click', async function() {
+    // Sync to cloud handler (only if button exists)
+    if (syncToCloudBtn) {
+        syncToCloudBtn.addEventListener('click', async function() {
         const holdings = loadHoldings();
 
         try {
@@ -871,9 +872,11 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Sync failed: ' + error.message);
         }
     });
+    }
 
-    // Load from cloud handler
-    loadFromCloudBtn.addEventListener('click', async function() {
+    // Load from cloud handler (only if button exists)
+    if (loadFromCloudBtn) {
+        loadFromCloudBtn.addEventListener('click', async function() {
         try {
             const response = await fetch('/api/holdings');
             const cloudHoldings = await response.json();
@@ -893,9 +896,11 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Load failed: ' + error.message);
         }
     });
+    }
 
-    // Export data handler
-    exportDataBtn.addEventListener('click', async function() {
+    // Export data handler (only if button exists)
+    if (exportDataBtn) {
+        exportDataBtn.addEventListener('click', async function() {
         const holdings = await loadHoldings();
         const jsonData = JSON.stringify(holdings, null, 2);
 
@@ -910,9 +915,11 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     });
+    }
 
-    // Import data handler
-    importDataBtn.addEventListener('click', function() {
+    // Import data handler (only if button exists)
+    if (importDataBtn) {
+        importDataBtn.addEventListener('click', function() {
         // Create file input
         const input = document.createElement('input');
         input.type = 'file';
@@ -949,6 +956,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         input.click();
     });
+    }
 
     /**
      * START THE APP
