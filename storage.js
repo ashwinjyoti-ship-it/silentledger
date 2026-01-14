@@ -416,76 +416,62 @@ async function getLedgerEntries(holdingId) {
 
 /**
  * CALCULATE HOLDING SUMMARY from ledger entries
- * Returns object with calculated values:
- * - currentShares: Total shares currently held
- * - totalInvested: Total amount spent on buys (in ₹)
- * - totalProceeds: Total amount received from sells (in ₹)
- * - netCostBasis: Net cost (invested - proceeds) (in ₹)
- * - avgCostPerShare: Average cost per share (in ₹)
- * - hasCalculations: Whether any buy/sell entries exist
+ * New simplified calculation:
+ * - currentShares: Original shares + ledger buys - ledger sells
+ * - totalRealizedProfit: Sum of (sell proceeds - original cost) for all sells
  */
 function calculateHoldingSummary(holding) {
-    // Default summary with no calculations
+    // Get original values from the holding
+    const originalShares = parseFloat(holding.shares_count) || 0;
+    const originalPrice = parseFloat(holding.purchase_price) || 0;
+    const originalInvestment = originalShares * originalPrice;
+
+    // Default summary
     const summary = {
-        currentShares: 0,
-        totalInvested: 0,
-        totalProceeds: 0,
-        netCostBasis: 0,
-        avgCostPerShare: 0,
-        hasCalculations: false
+        originalShares: originalShares,
+        originalPrice: originalPrice,
+        originalInvestment: originalInvestment,
+        currentShares: originalShares, // Start with original
+        totalRealizedProfit: 0,
+        hasLedgerEntries: false
     };
 
-    // If no ledger entries, return empty summary
+    // If no ledger entries, return with original values
     if (!holding.ledger_entries || holding.ledger_entries.length === 0) {
         return summary;
     }
 
-    let buyShares = 0;
-    let sellShares = 0;
-    let investedAmount = 0;
-    let proceedsAmount = 0;
+    let ledgerBuyShares = 0;
+    let ledgerSellShares = 0;
+    let totalRealizedProfit = 0;
 
     // Loop through all ledger entries
     holding.ledger_entries.forEach(entry => {
         const shares = parseFloat(entry.shares) || 0;
         const price = parseFloat(entry.price_per_share) || 0;
 
-        // Process BUY entries
+        // Process BUY entries - add to share count
         if (entry.entry_type === 'buy' && shares > 0) {
-            buyShares += shares;
-
-            // Only add to invested amount if price is specified
-            if (price > 0) {
-                investedAmount += (shares * price);
-            }
+            ledgerBuyShares += shares;
         }
 
-        // Process SELL entries
-        if (entry.entry_type === 'sell' && shares > 0) {
-            sellShares += shares;
-
-            // Only add to proceeds if price is specified
-            if (price > 0) {
-                proceedsAmount += (shares * price);
-            }
+        // Process SELL entries - subtract from share count and calculate profit
+        if (entry.entry_type === 'sell' && shares > 0 && price > 0) {
+            ledgerSellShares += shares;
+            
+            // Calculate realized profit/loss for this sale
+            const sellProceeds = shares * price;
+            const sellCost = shares * originalPrice; // Use ORIGINAL price as cost basis
+            const profit = sellProceeds - sellCost;
+            
+            totalRealizedProfit += profit;
         }
     });
 
     // Calculate current shares
-    summary.currentShares = buyShares - sellShares;
-
-    // Calculate totals
-    summary.totalInvested = investedAmount;
-    summary.totalProceeds = proceedsAmount;
-    summary.netCostBasis = investedAmount - proceedsAmount;
-
-    // Calculate average cost per share (avoid division by zero)
-    if (summary.currentShares > 0 && summary.netCostBasis > 0) {
-        summary.avgCostPerShare = summary.netCostBasis / summary.currentShares;
-    }
-
-    // Mark that we have calculations if any buy or sell entries exist
-    summary.hasCalculations = (buyShares > 0 || sellShares > 0);
+    summary.currentShares = originalShares + ledgerBuyShares - ledgerSellShares;
+    summary.totalRealizedProfit = totalRealizedProfit;
+    summary.hasLedgerEntries = (ledgerBuyShares > 0 || ledgerSellShares > 0);
 
     return summary;
 }

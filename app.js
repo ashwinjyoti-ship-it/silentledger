@@ -88,29 +88,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="card-company">${holding.company_name}</div>
             ` : ''}
 
-            <!-- Card data rows -->
-            <div class="card-data">
-                ${holding.shares_count ? `
-                    <div class="card-row">
-                        <span class="card-label">shares:</span>
-                        <span class="card-value">${formatNumber(holding.shares_count)}</span>
+            <!-- Original Section -->
+            ${(holding.shares_count && holding.purchase_price) ? `
+                <div class="card-section">
+                    <div class="card-section-title">Original</div>
+                    <div class="card-section-content">
+                        Shares: ${formatNumber(holding.shares_count)} @ ₹${formatNumber(holding.purchase_price)}
                     </div>
-                ` : ''}
+                    <div class="card-section-investment">
+                        Original Investment: ₹${formatNumber(summary.originalInvestment)}
+                    </div>
+                </div>
+            ` : `
+                <!-- Card data rows (fallback if no original investment data) -->
+                <div class="card-data">
+                    ${holding.shares_count ? `
+                        <div class="card-row">
+                            <span class="card-label">shares:</span>
+                            <span class="card-value">${formatNumber(holding.shares_count)}</span>
+                        </div>
+                    ` : ''}
 
-                ${holding.date_acquired ? `
-                    <div class="card-row">
-                        <span class="card-label">acquired:</span>
-                        <span class="card-value">${formatDate(holding.date_acquired)}</span>
-                    </div>
-                ` : ''}
+                    ${holding.date_acquired ? `
+                        <div class="card-row">
+                            <span class="card-label">acquired:</span>
+                            <span class="card-value">${formatDate(holding.date_acquired)}</span>
+                        </div>
+                    ` : ''}
 
-                ${holding.purchase_price ? `
-                    <div class="card-row">
-                        <span class="card-label">price/share:</span>
-                        <span class="card-value">₹${formatNumber(holding.purchase_price)}</span>
-                    </div>
-                ` : ''}
-            </div>
+                    ${holding.purchase_price ? `
+                        <div class="card-row">
+                            <span class="card-label">price/share:</span>
+                            <span class="card-value">₹${formatNumber(holding.purchase_price)}</span>
+                        </div>
+                    ` : ''}
+                </div>
+            `}
 
             <!-- Notes section (if notes exist) -->
             ${holding.notes ? `
@@ -120,43 +133,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             ` : ''}
 
-            <!-- Calculated Summary (only show if ledger has buy/sell entries) -->
-            ${summary.hasCalculations ? `
-                <div class="card-summary">
-                    <div class="card-summary-title">calculated from ledger</div>
-
-                    <div class="summary-row summary-row-highlight">
-                        <span class="summary-label">current shares:</span>
-                        <span class="summary-value">${formatNumber(summary.currentShares)}</span>
+            <!-- Current Section (only show if ledger has entries) -->
+            ${summary.hasLedgerEntries ? `
+                <div class="card-section">
+                    <div class="card-section-title">Current</div>
+                    <div class="card-section-row">
+                        <span class="card-section-label">Shares:</span>
+                        <span class="card-section-value">${formatNumber(summary.currentShares)}</span>
                     </div>
-
-                    ${summary.totalInvested > 0 ? `
-                        <div class="summary-row">
-                            <span class="summary-label">total invested:</span>
-                            <span class="summary-value">₹${formatNumber(summary.totalInvested)}</span>
-                        </div>
-                    ` : ''}
-
-                    ${summary.totalProceeds > 0 ? `
-                        <div class="summary-row">
-                            <span class="summary-label">total proceeds:</span>
-                            <span class="summary-value">₹${formatNumber(summary.totalProceeds)}</span>
-                        </div>
-                    ` : ''}
-
-                    ${summary.netCostBasis > 0 ? `
-                        <div class="summary-row">
-                            <span class="summary-label">net cost basis:</span>
-                            <span class="summary-value">₹${formatNumber(summary.netCostBasis)}</span>
-                        </div>
-                    ` : ''}
-
-                    ${summary.avgCostPerShare > 0 ? `
-                        <div class="summary-row">
-                            <span class="summary-label">avg cost/share:</span>
-                            <span class="summary-value">₹${formatNumber(summary.avgCostPerShare)}</span>
-                        </div>
-                    ` : ''}
+                    <div class="card-section-row ${summary.totalRealizedProfit >= 0 ? 'profit-positive' : 'profit-negative'}">
+                        <span class="card-section-label">Total Realized Profit:</span>
+                        <span class="card-section-value">${summary.totalRealizedProfit >= 0 ? '+' : ''}₹${formatNumber(Math.abs(summary.totalRealizedProfit))}</span>
+                    </div>
                 </div>
             ` : ''}
 
