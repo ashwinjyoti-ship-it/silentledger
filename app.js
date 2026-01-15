@@ -29,6 +29,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Then display the holdings
         await displayHoldings();
+        
+        // Load PDFs from localStorage
+        loadPDFs();
     }
 
     /**
@@ -764,29 +767,71 @@ document.addEventListener('DOMContentLoaded', function() {
     const pdfViewerContainer = document.getElementById('pdfViewerContainer');
 
     let uploadedPDFs = [];
+    const PDF_STORAGE_KEY = 'silent_ledger_pdfs';
+
+    // Load PDFs from localStorage on init
+    function loadPDFs() {
+        try {
+            const data = localStorage.getItem(PDF_STORAGE_KEY);
+            if (data) {
+                uploadedPDFs = JSON.parse(data);
+                console.log('✓ Loaded', uploadedPDFs.length, 'PDFs from storage');
+            }
+        } catch (error) {
+            console.error('Error loading PDFs:', error);
+        }
+        displayPDFList();
+    }
+
+    // Save PDFs to localStorage
+    function savePDFs() {
+        try {
+            localStorage.setItem(PDF_STORAGE_KEY, JSON.stringify(uploadedPDFs));
+            console.log('✓ Saved', uploadedPDFs.length, 'PDFs to storage');
+        } catch (error) {
+            console.error('Error saving PDFs:', error);
+        }
+    }
 
     // Handle PDF file selection
-    pdfFileInput.addEventListener('change', handlePDFFileSelect);
+    if (pdfFileInput) {
+        pdfFileInput.addEventListener('change', handlePDFFileSelect);
+    }
 
-    function handlePDFFileSelect(event) {
+    async function handlePDFFileSelect(event) {
         const files = Array.from(event.target.files);
 
-        files.forEach(file => {
+        for (const file of files) {
             if (file.type === 'application/pdf') {
+                // Convert file to base64 for storage
+                const base64Data = await fileToBase64(file);
+                
                 const pdfData = {
                     id: generateId(),
                     name: file.name,
                     size: formatFileSize(file.size),
-                    file: file,
-                    url: URL.createObjectURL(file)
+                    sizeBytes: file.size,
+                    data: base64Data, // Store as base64
+                    uploadedAt: new Date().toISOString()
                 };
 
                 uploadedPDFs.push(pdfData);
             }
-        });
+        }
 
+        savePDFs();
         displayPDFList();
         pdfFileInput.value = '';
+    }
+
+    // Convert file to base64
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
     }
 
     function displayPDFList() {
@@ -835,11 +880,14 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.pdf-item').forEach(item => {
             item.classList.remove('active');
         });
-        document.querySelector(`[data-id="${pdfId}"]`).classList.add('active');
+        const activeItem = document.querySelector(`[data-id="${pdfId}"]`);
+        if (activeItem) {
+            activeItem.classList.add('active');
+        }
 
-        // Display PDF
+        // Display PDF using base64 data
         pdfViewerContainer.innerHTML = `
-            <embed src="${pdf.url}" type="application/pdf" />
+            <embed src="${pdf.data}" type="application/pdf" />
         `;
     }
 
@@ -848,17 +896,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!confirmed) return;
 
-        const pdf = uploadedPDFs.find(p => p.id === pdfId);
-        if (pdf) {
-            URL.revokeObjectURL(pdf.url);
-        }
-
         uploadedPDFs = uploadedPDFs.filter(p => p.id !== pdfId);
 
+        savePDFs();
         displayPDFList();
 
         // Clear viewer if deleted PDF was being viewed
-        if (pdfViewerContainer.querySelector('embed')?.src === pdf.url) {
+        const activeItem = document.querySelector('.pdf-item.active');
+        if (activeItem && activeItem.dataset.id === pdfId) {
             pdfViewerContainer.innerHTML = '<p class="empty-message">select a pdf to view</p>';
         }
     }
