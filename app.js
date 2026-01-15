@@ -944,16 +944,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!confirmed) return;
 
+        // Remove from array
         uploadedPDFs = uploadedPDFs.filter(p => p.id !== pdfId);
 
+        // Save to localStorage and sync to cloud
         await savePDFs();
-        displayPDFList();
-
-        // Clear viewer if deleted PDF was being viewed
-        const activeItem = document.querySelector('.pdf-item.active');
-        if (activeItem && activeItem.dataset.id === pdfId) {
+        
+        // Always clear viewer after delete
+        if (pdfViewerContainer) {
             pdfViewerContainer.innerHTML = '<p class="empty-message">select a pdf to view</p>';
         }
+        
+        displayPDFList();
+        
+        console.log('✓ PDF deleted:', pdfId);
     }
 
     function formatFileSize(bytes) {
