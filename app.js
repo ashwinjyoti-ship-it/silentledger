@@ -24,6 +24,10 @@ document.addEventListener('DOMContentLoaded', function() {
      * Load and display existing holdings when page loads
      */
     async function init() {
+        // First, trigger cloud sync (this will update localStorage if cloud has data)
+        await loadHoldings();
+        
+        // Then display the holdings
         await displayHoldings();
     }
 
