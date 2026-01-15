@@ -865,7 +865,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        savePDFs();
+        await savePDFs();
         displayPDFList();
         pdfFileInput.value = '';
     }
