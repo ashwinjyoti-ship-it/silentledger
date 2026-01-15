@@ -105,6 +105,20 @@ function updateSyncStatus(status, message) {
     if (statusElement) {
         statusElement.textContent = message;
         statusElement.className = `sync-status sync-${status}`;
+        
+        // Auto-hide after 20 seconds for success/warning messages
+        if (status === 'success' || status === 'warning') {
+            setTimeout(() => {
+                statusElement.style.opacity = '0';
+                setTimeout(() => {
+                    statusElement.style.display = 'none';
+                }, 300); // Wait for fade animation
+            }, 20000);
+            
+            // Reset display and opacity for next message
+            statusElement.style.display = 'inline-block';
+            statusElement.style.opacity = '1';
+        }
     }
 }
 

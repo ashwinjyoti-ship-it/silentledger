@@ -842,20 +842,28 @@ document.addEventListener('DOMContentLoaded', function() {
     async function handlePDFFileSelect(event) {
         const files = Array.from(event.target.files);
 
+        console.log('=== PDF UPLOAD START ===');
+        console.log('Files selected:', files.length);
+        console.log('Current uploadedPDFs array:', uploadedPDFs.length);
+
         // Load existing PDFs from cloud first (without displaying)
         try {
             const response = await fetch('/api/pdfs');
             if (response.ok) {
                 const cloudPDFs = await response.json();
                 uploadedPDFs = cloudPDFs;
-                console.log('Loaded', cloudPDFs.length, 'existing PDFs before upload');
+                console.log('✓ Loaded', cloudPDFs.length, 'existing PDFs from cloud');
+                console.log('Cloud PDFs:', cloudPDFs.map(p => p.name));
+            } else {
+                console.error('Failed to fetch cloud PDFs:', response.status);
             }
         } catch (error) {
-            console.warn('Could not load existing PDFs:', error);
+            console.error('Error loading existing PDFs:', error);
         }
 
         for (const file of files) {
             if (file.type === 'application/pdf') {
+                console.log('Processing file:', file.name);
                 // Convert file to base64 for storage
                 const base64Data = await fileToBase64(file);
                 
@@ -869,13 +877,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
 
                 uploadedPDFs.push(pdfData);
-                console.log('Added PDF:', file.name, '- Total:', uploadedPDFs.length);
+                console.log('✓ Added PDF:', file.name);
+                console.log('Total PDFs now:', uploadedPDFs.length);
             }
         }
 
+        console.log('Final PDFs array before save:', uploadedPDFs.map(p => p.name));
         await savePDFs();
         displayPDFList();
         pdfFileInput.value = '';
+        console.log('=== PDF UPLOAD END ===');
     }
 
     // Convert file to base64
