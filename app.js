@@ -29,9 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Then display the holdings
         await displayHoldings();
-        
-        // Load PDFs from localStorage
-        loadPDFs();
     }
 
     /**
@@ -1369,4 +1366,9 @@ document.addEventListener('DOMContentLoaded', function() {
      * START THE APP
      */
     init();
+    
+    // Load PDFs on init
+    if (typeof loadPDFs === 'function') {
+        loadPDFs();
+    }
 });
