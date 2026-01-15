@@ -835,6 +835,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function displayPDFList() {
+        if (!pdfList) return;
+        
         if (uploadedPDFs.length === 0) {
             pdfList.innerHTML = '<p class="empty-message">no pdfs uploaded yet</p>';
             return;
