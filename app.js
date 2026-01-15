@@ -842,8 +842,17 @@ document.addEventListener('DOMContentLoaded', function() {
     async function handlePDFFileSelect(event) {
         const files = Array.from(event.target.files);
 
-        // Load existing PDFs from cloud first
-        await loadPDFs();
+        // Load existing PDFs from cloud first (without displaying)
+        try {
+            const response = await fetch('/api/pdfs');
+            if (response.ok) {
+                const cloudPDFs = await response.json();
+                uploadedPDFs = cloudPDFs;
+                console.log('Loaded', cloudPDFs.length, 'existing PDFs before upload');
+            }
+        } catch (error) {
+            console.warn('Could not load existing PDFs:', error);
+        }
 
         for (const file of files) {
             if (file.type === 'application/pdf') {
@@ -860,6 +869,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
 
                 uploadedPDFs.push(pdfData);
+                console.log('Added PDF:', file.name, '- Total:', uploadedPDFs.length);
             }
         }
 
