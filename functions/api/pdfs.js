@@ -6,9 +6,6 @@
 export async function onRequest(context) {
     const { request, env } = context;
     const { pathname } = new URL(request.url);
-    
-    // Initialize database tables if they don't exist
-    await initializeTables(env.DB);
 
     if (request.method === 'GET') {
         return handleGet(env.DB);
@@ -41,6 +38,9 @@ async function initializeTables(db) {
 
 async function handleGet(db) {
     try {
+        // Ensure table exists
+        await initializeTables(db);
+        
         const result = await db.prepare('SELECT * FROM pdfs ORDER BY created_at DESC').all();
         
         return new Response(JSON.stringify(result.results || []), {
