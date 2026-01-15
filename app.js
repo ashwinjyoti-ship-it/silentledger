@@ -842,6 +842,9 @@ document.addEventListener('DOMContentLoaded', function() {
     async function handlePDFFileSelect(event) {
         const files = Array.from(event.target.files);
 
+        // Load existing PDFs from cloud first
+        await loadPDFs();
+
         for (const file of files) {
             if (file.type === 'application/pdf') {
                 // Convert file to base64 for storage
