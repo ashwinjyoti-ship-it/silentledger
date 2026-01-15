@@ -1236,6 +1236,42 @@ button:hover {
         border-bottom: none;
     }
 
+    /* Holdings header and actions */
+    .holdings-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    .holdings-actions {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .holdings-actions button {
+        width: 100%;
+        padding: 12px 15px;
+        font-size: 13px;
+    }
+
+    /* Search container on mobile */
+    .search-container {
+        width: 100%;
+        order: -1; /* Move search to top */
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 12px 35px 12px 12px;
+        font-size: 13px;
+    }
+
+    .search-dropdown {
+        left: 0;
+        right: 0;
+    }
+
     /* Holdings grid - single column on mobile */
     .holdings-grid {
         grid-template-columns: 1fr;

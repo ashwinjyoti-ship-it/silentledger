@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', function() {
     async function displayHoldings() {
         // Load from localStorage for instant display (no cloud fetch)
         const holdings = loadHoldingsLocal();
+        
+        console.log('displayHoldings: loaded', holdings.length, 'holdings');
 
         // Clear the grid
         holdingsGrid.innerHTML = '';
@@ -42,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // If no holdings exist, show empty state
         if (holdings.length === 0) {
             emptyState.classList.remove('hidden');
+            console.log('displayHoldings: showing empty state');
             return;
         }
 
@@ -53,6 +56,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const card = createHoldingCard(holding);
             holdingsGrid.appendChild(card);
         });
+        
+        console.log('displayHoldings: rendered', holdings.length, 'cards to grid');
     }
 
     /**
