@@ -776,29 +776,24 @@ document.addEventListener('DOMContentLoaded', function() {
             if (response.ok) {
                 const cloudPDFs = await response.json();
                 
-                if (cloudPDFs.length > 0) {
-                    // Cloud has data, use it
-                    uploadedPDFs = cloudPDFs;
-                    localStorage.setItem(PDF_STORAGE_KEY, JSON.stringify(cloudPDFs));
-                    console.log('✓ Loaded', cloudPDFs.length, 'PDFs from cloud');
-                    displayPDFList();
-                    return;
-                }
+                // Always use cloud data (even if empty)
+                uploadedPDFs = cloudPDFs;
+                localStorage.setItem(PDF_STORAGE_KEY, JSON.stringify(cloudPDFs));
+                console.log('✓ Loaded', cloudPDFs.length, 'PDFs from cloud');
+                displayPDFList();
+                return;
             }
         } catch (error) {
-            console.warn('Cloud sync failed, using local data:', error);
+            console.warn('Cloud unavailable, using local data:', error);
         }
         
-        // Fallback to localStorage
+        // Fallback to localStorage only if cloud is unreachable
         try {
             const data = localStorage.getItem(PDF_STORAGE_KEY);
             console.log('PDF data from localStorage:', data ? 'exists' : 'empty');
             if (data) {
                 uploadedPDFs = JSON.parse(data);
-                console.log('✓ Loaded', uploadedPDFs.length, 'PDFs from storage');
-                
-                // Sync local data to cloud if cloud was empty
-                await syncPDFsToCloud();
+                console.log('✓ Loaded', uploadedPDFs.length, 'PDFs from localStorage (offline)');
             }
         } catch (error) {
             console.error('Error loading PDFs:', error);
