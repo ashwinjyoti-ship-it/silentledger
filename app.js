@@ -827,7 +827,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const result = await response.json();
                 console.log('✓ Synced', result.synced, 'PDFs to cloud');
             } else {
-                console.warn('Failed to sync PDFs to cloud');
+                const error = await response.json();
+                console.error('Failed to sync PDFs to cloud:', error);
+                alert(`Cloud sync failed: ${error.error || 'Unknown error'}`);
             }
         } catch (error) {
             console.warn('Cloud sync failed:', error);
@@ -841,10 +843,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function handlePDFFileSelect(event) {
         const files = Array.from(event.target.files);
+        const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB limit
 
         console.log('=== PDF UPLOAD START ===');
         console.log('Files selected:', files.length);
         console.log('Current uploadedPDFs array:', uploadedPDFs.length);
+
+        // Check file sizes first
+        for (const file of files) {
+            if (file.size > MAX_FILE_SIZE) {
+                alert(`PDF "${file.name}" is too large (${Math.round(file.size/1024)}KB).\nMaximum size is 1MB (1024KB).`);
+                pdfFileInput.value = '';
+                console.log('❌ Upload cancelled - file too large');
+                return;
+            }
+        }
 
         // Load existing PDFs from cloud first (without displaying)
         try {
@@ -863,7 +876,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         for (const file of files) {
             if (file.type === 'application/pdf') {
-                console.log('Processing file:', file.name);
+                console.log('Processing file:', file.name, '-', Math.round(file.size/1024) + 'KB');
                 // Convert file to base64 for storage
                 const base64Data = await fileToBase64(file);
                 

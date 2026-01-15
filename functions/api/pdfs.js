@@ -70,6 +70,20 @@ async function handlePost(request, db) {
             });
         }
 
+        // Check for size limits (D1 has 1MB per row limit)
+        const MAX_SIZE = 1 * 1024 * 1024; // 1MB
+        for (const pdf of pdfs) {
+            const dataSize = pdf.data ? pdf.data.length : 0;
+            if (dataSize > MAX_SIZE) {
+                return new Response(JSON.stringify({ 
+                    error: `PDF "${pdf.name}" is too large (${Math.round(dataSize/1024)}KB). Maximum size is 1MB.` 
+                }), {
+                    status: 400,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+        }
+
         // Delete all existing PDFs
         await db.prepare('DELETE FROM pdfs').run();
 
@@ -97,7 +111,10 @@ async function handlePost(request, db) {
         });
     } catch (error) {
         console.error('Error syncing PDFs:', error);
-        return new Response(JSON.stringify({ error: error.message }), {
+        return new Response(JSON.stringify({ 
+            error: error.message,
+            details: error.stack 
+        }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         });
