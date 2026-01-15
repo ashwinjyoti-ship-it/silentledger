@@ -110,6 +110,20 @@
             <div class="holdings-header">
                 <h2>holdings archive</h2>
                 <div class="holdings-actions">
+                    <!-- Search Box -->
+                    <div class="search-container">
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            class="search-input" 
+                            placeholder="search symbol or company..."
+                            autocomplete="off"
+                        >
+                        <button id="clearSearchBtn" class="clear-search-btn" style="display:none;">×</button>
+                        <div id="searchDropdown" class="search-dropdown" style="display:none;">
+                            <!-- Search results will appear here -->
+                        </div>
+                    </div>
                     <button id="selectAllBtn" class="btn-secondary" style="display:none;">select all</button>
                     <button id="deselectAllBtn" class="btn-secondary" style="display:none;">deselect all</button>
                     <button id="deleteSelectedBtn" class="btn-danger" style="display:none;">delete selected</button>

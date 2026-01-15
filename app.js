@@ -1113,6 +1113,203 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     /**
+     * ========================================
+     * SEARCH FUNCTIONALITY
+     * ========================================
+     */
+    
+    const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const searchDropdown = document.getElementById('searchDropdown');
+    let searchTimeout = null;
+    let currentSearchResults = [];
+    let selectedSearchIndex = -1;
+
+    if (searchInput) {
+        // Handle input with debouncing
+        searchInput.addEventListener('input', (event) => {
+            const query = event.target.value.trim();
+            
+            // Show/hide clear button
+            if (clearSearchBtn) {
+                clearSearchBtn.style.display = query ? 'block' : 'none';
+            }
+
+            // Clear previous timeout
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+            }
+
+            // Debounce search (300ms)
+            searchTimeout = setTimeout(() => {
+                performSearch(query);
+            }, 300);
+        });
+
+        // Handle keyboard navigation
+        searchInput.addEventListener('keydown', (event) => {
+            if (!searchDropdown || searchDropdown.style.display === 'none') {
+                return;
+            }
+
+            switch(event.key) {
+                case 'ArrowDown':
+                    event.preventDefault();
+                    selectedSearchIndex = Math.min(selectedSearchIndex + 1, currentSearchResults.length - 1);
+                    updateSearchSelection();
+                    break;
+                case 'ArrowUp':
+                    event.preventDefault();
+                    selectedSearchIndex = Math.max(selectedSearchIndex - 1, -1);
+                    updateSearchSelection();
+                    break;
+                case 'Enter':
+                    event.preventDefault();
+                    if (selectedSearchIndex >= 0 && currentSearchResults[selectedSearchIndex]) {
+                        selectSearchResult(currentSearchResults[selectedSearchIndex]);
+                    }
+                    break;
+                case 'Escape':
+                    closeSearchDropdown();
+                    break;
+            }
+        });
+    }
+
+    // Clear search button
+    if (clearSearchBtn) {
+        clearSearchBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            clearSearchBtn.style.display = 'none';
+            closeSearchDropdown();
+            searchInput.focus();
+        });
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (event) => {
+        if (searchInput && searchDropdown) {
+            if (!searchInput.contains(event.target) && 
+                !searchDropdown.contains(event.target) && 
+                !clearSearchBtn?.contains(event.target)) {
+                closeSearchDropdown();
+            }
+        }
+    });
+
+    async function performSearch(query) {
+        if (!query || query.length === 0) {
+            closeSearchDropdown();
+            return;
+        }
+
+        // Load holdings
+        const holdings = await loadHoldingsLocal();
+        
+        // Filter holdings by symbol or company name
+        const lowerQuery = query.toLowerCase();
+        const results = holdings.filter(holding => {
+            const symbol = (holding.symbol || '').toLowerCase();
+            const company = (holding.company_name || '').toLowerCase();
+            return symbol.includes(lowerQuery) || company.includes(lowerQuery);
+        });
+
+        currentSearchResults = results;
+        selectedSearchIndex = -1;
+        displaySearchResults(results);
+    }
+
+    function displaySearchResults(results) {
+        if (!searchDropdown) return;
+
+        if (results.length === 0) {
+            searchDropdown.innerHTML = '<div class="search-no-results">no matches found</div>';
+            searchDropdown.style.display = 'block';
+            return;
+        }
+
+        // Limit to 10 results
+        const displayResults = results.slice(0, 10);
+        
+        searchDropdown.innerHTML = displayResults.map((holding, index) => {
+            const symbol = holding.symbol || 'N/A';
+            const company = holding.company_name || 'Unknown Company';
+            return `
+                <div class="search-result-item" data-index="${index}" data-holding-id="${holding.id}">
+                    ${symbol} - ${company}
+                </div>
+            `;
+        }).join('');
+
+        // Add click handlers
+        searchDropdown.querySelectorAll('.search-result-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const holdingId = item.dataset.holdingId;
+                const holding = results.find(h => h.id === holdingId);
+                if (holding) {
+                    selectSearchResult(holding);
+                }
+            });
+        });
+
+        searchDropdown.style.display = 'block';
+    }
+
+    function updateSearchSelection() {
+        if (!searchDropdown) return;
+
+        const items = searchDropdown.querySelectorAll('.search-result-item');
+        items.forEach((item, index) => {
+            if (index === selectedSearchIndex) {
+                item.classList.add('active');
+                item.scrollIntoView({ block: 'nearest' });
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    }
+
+    function selectSearchResult(holding) {
+        // Close dropdown
+        closeSearchDropdown();
+        
+        // Clear search input
+        if (searchInput) {
+            searchInput.value = '';
+        }
+        if (clearSearchBtn) {
+            clearSearchBtn.style.display = 'none';
+        }
+
+        // Find the holding card in the DOM
+        const holdingCard = document.querySelector(`[data-id="${holding.id}"]`);
+        
+        if (holdingCard) {
+            // Scroll to the card
+            holdingCard.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+
+            // Add highlight
+            holdingCard.classList.add('highlighted');
+
+            // Remove highlight after 2 seconds
+            setTimeout(() => {
+                holdingCard.classList.remove('highlighted');
+            }, 2000);
+        }
+    }
+
+    function closeSearchDropdown() {
+        if (searchDropdown) {
+            searchDropdown.style.display = 'none';
+        }
+        currentSearchResults = [];
+        selectedSearchIndex = -1;
+    }
+
+    /**
      * START THE APP
      */
     init();
