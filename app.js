@@ -767,14 +767,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const PDF_STORAGE_KEY = 'silent_ledger_pdfs';
 
     // Load PDFs from localStorage on init
-    function loadPDFs() {
+    async function loadPDFs() {
         console.log('loadPDFs() called');
+        
+        // First, try to load from cloud
+        try {
+            const response = await fetch('/api/pdfs');
+            if (response.ok) {
+                const cloudPDFs = await response.json();
+                
+                if (cloudPDFs.length > 0) {
+                    // Cloud has data, use it
+                    uploadedPDFs = cloudPDFs;
+                    localStorage.setItem(PDF_STORAGE_KEY, JSON.stringify(cloudPDFs));
+                    console.log('✓ Loaded', cloudPDFs.length, 'PDFs from cloud');
+                    displayPDFList();
+                    return;
+                }
+            }
+        } catch (error) {
+            console.warn('Cloud sync failed, using local data:', error);
+        }
+        
+        // Fallback to localStorage
         try {
             const data = localStorage.getItem(PDF_STORAGE_KEY);
             console.log('PDF data from localStorage:', data ? 'exists' : 'empty');
             if (data) {
                 uploadedPDFs = JSON.parse(data);
                 console.log('✓ Loaded', uploadedPDFs.length, 'PDFs from storage');
+                
+                // Sync local data to cloud if cloud was empty
+                await syncPDFsToCloud();
             }
         } catch (error) {
             console.error('Error loading PDFs:', error);
@@ -782,13 +806,36 @@ document.addEventListener('DOMContentLoaded', function() {
         displayPDFList();
     }
 
-    // Save PDFs to localStorage
-    function savePDFs() {
+    // Save PDFs to localStorage and sync to cloud
+    async function savePDFs() {
         try {
             localStorage.setItem(PDF_STORAGE_KEY, JSON.stringify(uploadedPDFs));
             console.log('✓ Saved', uploadedPDFs.length, 'PDFs to storage');
+            
+            // Sync to cloud
+            await syncPDFsToCloud();
         } catch (error) {
             console.error('Error saving PDFs:', error);
+        }
+    }
+
+    // Sync PDFs to cloud
+    async function syncPDFsToCloud() {
+        try {
+            const response = await fetch('/api/pdfs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pdfs: uploadedPDFs })
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                console.log('✓ Synced', result.synced, 'PDFs to cloud');
+            } else {
+                console.warn('Failed to sync PDFs to cloud');
+            }
+        } catch (error) {
+            console.warn('Cloud sync failed:', error);
         }
     }
 
@@ -892,14 +939,14 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
     }
 
-    function deletePDF(pdfId) {
+    async function deletePDF(pdfId) {
         const confirmed = confirm('Delete this PDF?');
 
         if (!confirmed) return;
 
         uploadedPDFs = uploadedPDFs.filter(p => p.id !== pdfId);
 
-        savePDFs();
+        await savePDFs();
         displayPDFList();
 
         // Clear viewer if deleted PDF was being viewed
