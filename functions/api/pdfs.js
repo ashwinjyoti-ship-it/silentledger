@@ -20,19 +20,23 @@ export async function onRequest(context) {
 
 async function initializeTables(db) {
     try {
-        await db.exec(`
-            CREATE TABLE IF NOT EXISTS pdfs (
-                id TEXT PRIMARY KEY,
-                name TEXT NOT NULL,
-                size TEXT,
-                size_bytes INTEGER,
-                data TEXT NOT NULL,
-                uploaded_at TEXT,
-                created_at TEXT
-            )
-        `);
+        await db.batch([
+            db.prepare(`
+                CREATE TABLE IF NOT EXISTS pdfs (
+                    id TEXT PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    size TEXT,
+                    size_bytes INTEGER,
+                    data TEXT NOT NULL,
+                    uploaded_at TEXT,
+                    created_at TEXT
+                )
+            `)
+        ]);
+        console.log('PDFs table initialized');
     } catch (error) {
         console.error('Error creating pdfs table:', error);
+        throw error;
     }
 }
 
