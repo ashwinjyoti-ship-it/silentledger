@@ -768,8 +768,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load PDFs from localStorage on init
     function loadPDFs() {
+        console.log('loadPDFs() called');
         try {
             const data = localStorage.getItem(PDF_STORAGE_KEY);
+            console.log('PDF data from localStorage:', data ? 'exists' : 'empty');
             if (data) {
                 uploadedPDFs = JSON.parse(data);
                 console.log('✓ Loaded', uploadedPDFs.length, 'PDFs from storage');
